@@ -162,7 +162,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                     <td><?php echo $row['id_order'] ?></td>
                                     <td><?php echo $row['pelanggan'] ?></td>
                                     <td><?php echo $row['meja'] ?></td>
-                                    <td><?php echo number_format($row['nominal_rs'], 0, ',', '.') ?></td>
+                                    <td><?php echo number_format($row['nominal_rs'] ?? 0, 0, ',', '.') ?></td>
                                     <td><?php echo $row['waktu_order'] ?></td>
                                     <td><?php echo $row['nama_kios'] ?></td>
                                 </tr>
