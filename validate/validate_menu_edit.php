@@ -9,6 +9,7 @@ $kategori_menu = (isset($_POST["kategori_menu"])) ? htmlentities($_POST["kategor
 $harga = (isset($_POST["harga"])) ? htmlentities($_POST["harga"]) : "";
 $stok = (isset($_POST["stok"])) ? htmlentities($_POST["stok"]) : "";
 $kios = (isset($_POST["kios"])) ? htmlentities($_POST["kios"]) : "";
+$pajak = (isset($_POST["pajak"])) ? htmlentities($_POST["pajak"]) : "";
 
 $kode_rand = rand(1000, 9999) . "-";
 $target_dir = "../assets/img/" . $kode_rand;
@@ -21,7 +22,7 @@ echo $imageType;
 if (isset($_POST['input_menu_edit_proses'])) {
     if (!$_FILES["foto"]["tmp_name"]) {
 
-        $query = mysqli_query($conn, "UPDATE tb_menu SET nama = '$nama_menu', keterangan = '$keterangan', kategori = '$kategori_menu', nama_toko = '$kios', harga = '$harga', stok = '$stok' WHERE id = '$_POST[id]'");
+        $query = mysqli_query($conn, "UPDATE tb_menu SET nama = '$nama_menu', keterangan = '$keterangan', kategori = '$kategori_menu', nama_toko = '$kios', harga = '$harga' , pajak = '$pajak' WHERE id = '$_POST[id]'");
         if ($query) {
             echo "<script>alert('Menu berhasil diupdate tanpa mengubah foto'); window.location.href='../menu';</script>";
         } else {
@@ -53,7 +54,7 @@ if (isset($_POST['input_menu_edit_proses'])) {
         } else {
             $select_query = mysqli_query($conn, "SELECT * FROM tb_menu WHERE nama = '$nama_menu'");
             if (move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
-                $query = mysqli_query($conn, "UPDATE tb_menu SET nama = '$nama_menu', foto = '" . $kode_rand . $_FILES['foto']['name'] . "', keterangan = '$keterangan', kategori = '$kategori_menu', nama_toko = '$kios', harga = '$harga', stok = '$stok' WHERE id = '$_POST[id]'");
+                $query = mysqli_query($conn, "UPDATE tb_menu SET nama = '$nama_menu', foto = '" . $kode_rand . $_FILES['foto']['name'] . "', keterangan = '$keterangan', kategori = '$kategori_menu', nama_toko = '$kios', harga = '$harga',pajak = '$pajak' WHERE id = '$_POST[id]'");
                 if ($query) {
                     echo "<script>alert('Menu berhasil diupdate'); window.location.href='../menu';</script>";
                 } else {

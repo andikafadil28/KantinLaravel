@@ -24,30 +24,36 @@ while ($record = mysqli_fetch_array($query)) {
             <div class="row">
                 <?php
                 if ($_SESSION["level_kantin"] == 1) {
-                ?>
+                    ?>
                     <div class="col d-flex justify-content-end mb-3">
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalTambah">Tambah Menu</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalTambah">Tambah
+                            Menu</button>
                     </div>
-                <?php
+                    <?php
                 } else {
                 }
                 ?>
 
                 <!-- Modal tambah menu -->
-                <div class="modal fade" id="ModalTambah" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal fade" id="ModalTambah" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-xl modal-fullscreen-md-down">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Makanan Dan Minuman</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form class="needs-validation" novalidate action="validate/validate_menu.php" method="post" enctype="multipart/form-data">
+                                <form class="needs-validation" novalidate action="validate/validate_menu.php"
+                                    method="post" enctype="multipart/form-data">
                                     <div class="row mt-3">
                                         <div class="col lg-12">
                                             <div class="input-group">
-                                                <input type="file" class="form-control py-9" id="floatingInputGambar" placeholder="Masukan Gambar" name="foto" required>
-                                                <label class="input-group-text" for="floatingInputGambar">Upload Foto Menu</label>
+                                                <input type="file" class="form-control py-9" id="floatingInputGambar"
+                                                    placeholder="Masukan Gambar" name="foto" required>
+                                                <label class="input-group-text" for="floatingInputGambar">Upload Foto
+                                                    Menu</label>
                                                 <div class="invalid-feedback">
                                                     Gambar tidak boleh kosong
                                                 </div>
@@ -57,7 +63,8 @@ while ($record = mysqli_fetch_array($query)) {
                                     <div class="row mt-3">
                                         <div class="col">
                                             <div class="form-floating">
-                                                <input type="text" class="form-control" id="floatingNama" placeholder="Masukan Nama" name="nama_menu" required>
+                                                <input type="text" class="form-control" id="floatingNama"
+                                                    placeholder="Masukan Nama" name="nama_menu" required>
                                                 <label for="floatingNama">Nama Makanan</label>
                                                 <div class="invalid-feedback">
                                                     Nama tidak boleh kosong
@@ -68,7 +75,8 @@ while ($record = mysqli_fetch_array($query)) {
                                     <div class="row mt-3">
                                         <div class="col">
                                             <div class="form-floating">
-                                                <input type="text" class="form-control" id="floatingKeterangan" placeholder="Masukan Keterangan" name="keterangan">
+                                                <input type="text" class="form-control" id="floatingKeterangan"
+                                                    placeholder="Masukan Keterangan" name="keterangan">
                                                 <label for="floatingKeterangan">Keterangan</label>
                                             </div>
                                         </div>
@@ -76,13 +84,16 @@ while ($record = mysqli_fetch_array($query)) {
                                     <div class="row mt-3">
                                         <div class="col lg-4">
                                             <div class="form-floating mt-3">
-                                                <select class="form-select" aria-label="Default select example" name="kategori_menu" required>
+                                                <select class="form-select" aria-label="Default select example"
+                                                    name="kategori_menu" required>
                                                     <option selected hidden value="">Pilih Jenis Menu</option>
                                                     <?php
                                                     foreach ($sel_kategori as $row2) {
-                                                    ?>
-                                                        <option value="<?php echo $row2['id_kategori'] ?>"><?php echo $row2['kategori_menu'] ?></option>
-                                                    <?php
+                                                        ?>
+                                                        <option value="<?php echo $row2['id_kategori'] ?>">
+                                                            <?php echo $row2['kategori_menu'] ?>
+                                                        </option>
+                                                        <?php
                                                     }
                                                     ?>
                                                 </select>
@@ -94,7 +105,8 @@ while ($record = mysqli_fetch_array($query)) {
                                         </div>
                                         <div class="col lg-4">
                                             <div class="form-floating mt-3">
-                                                <input type="number" class="form-control" id="floatingHarga" placeholder="Masukan Harga" name="harga" required>
+                                                <input type="number" class="form-control" id="floatingHarga"
+                                                    placeholder="Masukan Harga" name="harga" required>
                                                 <label for="floatingHarga">Harga</label>
                                                 <div class="invalid-feedback">
                                                     Harga tidak boleh kosong
@@ -103,10 +115,11 @@ while ($record = mysqli_fetch_array($query)) {
                                         </div>
                                         <div class="col lg-4">
                                             <div class="form-floating mt-3">
-                                                <input type="number" class="form-control" id="floatingStok" placeholder="Masukan Stok" name="stok" required>
-                                                <label for="floatingStok">Stok</label>
+                                                <input type="number" class="form-control" id="floatingStok"
+                                                    placeholder="Masukan Stok" name="pajak" required>
+                                                <label for="floatingStok">Margin</label>
                                                 <div class="invalid-feedback">
-                                                    Stok tidak boleh kosong
+                                                    Margin tidak boleh kosong
                                                 </div>
                                             </div>
                                         </div>
@@ -114,13 +127,16 @@ while ($record = mysqli_fetch_array($query)) {
                                     <div class="row mt-3">
                                         <div class="col">
                                             <div class="form-floating mt-3">
-                                                <select class="form-select" aria-label="Default select example" name="kios" required>
+                                                <select class="form-select" aria-label="Default select example"
+                                                    name="kios" required>
                                                     <option selected hidden value="">Pilih Kios User</option>
                                                     <?php
                                                     foreach ($result2 as $row2) {
-                                                    ?>
-                                                        <option value="<?php echo $row2['nama'] ?>"><?php echo $row2['nama'] ?></option>
-                                                    <?php
+                                                        ?>
+                                                        <option value="<?php echo $row2['nama'] ?>">
+                                                            <?php echo $row2['nama'] ?>
+                                                        </option>
+                                                        <?php
                                                     }
                                                     ?>
                                                 </select>
@@ -132,8 +148,10 @@ while ($record = mysqli_fetch_array($query)) {
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary" name="input_menu_proses">Simpan</button>
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary"
+                                            name="input_menu_proses">Simpan</button>
                                     </div>
                                 </form>
                             </div>
@@ -143,23 +161,28 @@ while ($record = mysqli_fetch_array($query)) {
                 <?php
 
                 foreach ($result as $row) {
-                ?>
+                    ?>
                     <!-- Modal edit -->
-                    <div class="modal fade" id="ModalEdit<?php echo $row['id'] ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal fade" id="ModalEdit<?php echo $row['id'] ?>" data-bs-backdrop="static"
+                        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog modal-xl modal-fullscreen-md-down">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Makanan Dan Minuman</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form class="needs-validation" novalidate action="validate/validate_menu_edit.php" method="post" enctype="multipart/form-data">
+                                    <form class="needs-validation" novalidate action="validate/validate_menu_edit.php"
+                                        method="post" enctype="multipart/form-data">
                                         <input type="hidden" name="id" value="<?php echo $row['id'] ?>">
                                         <div class="row mt-3">
                                             <div class="col lg-12">
                                                 <div class="input-group">
-                                                    <input type="file" class="form-control py-9" id="floatingInputGambar" placeholder="Masukan Gambar" name="foto">
-                                                    <label class="input-group-text" for="floatingInputGambar">Upload Foto Menu</label>
+                                                    <input type="file" class="form-control py-9" id="floatingInputGambar"
+                                                        placeholder="Masukan Gambar" name="foto">
+                                                    <label class="input-group-text" for="floatingInputGambar">Upload Foto
+                                                        Menu</label>
                                                     <div class="invalid-feedback">
                                                         Gambar tidak boleh kosong
                                                     </div>
@@ -169,7 +192,9 @@ while ($record = mysqli_fetch_array($query)) {
                                         <div class="row mt-3">
                                             <div class="col">
                                                 <div class="form-floating">
-                                                    <input type="text" class="form-control" id="floatingNama" placeholder="Masukan Nama" name="nama_menu" value="<?php echo $row['nama'] ?>" required>
+                                                    <input type="text" class="form-control" id="floatingNama"
+                                                        placeholder="Masukan Nama" name="nama_menu"
+                                                        value="<?php echo $row['nama'] ?>" required>
                                                     <label for="floatingNama">Nama Makanan</label>
                                                     <div class="invalid-feedback">
                                                         Nama tidak boleh kosong
@@ -180,7 +205,9 @@ while ($record = mysqli_fetch_array($query)) {
                                         <div class="row mt-3">
                                             <div class="col">
                                                 <div class="form-floating">
-                                                    <input type="text" class="form-control" id="floatingKeterangan" placeholder="Masukan Keterangan" name="keterangan" value="<?php echo $row['keterangan'] ?>">
+                                                    <input type="text" class="form-control" id="floatingKeterangan"
+                                                        placeholder="Masukan Keterangan" name="keterangan"
+                                                        value="<?php echo $row['keterangan'] ?>">
                                                     <label for="floatingKeterangan">Keterangan</label>
                                                 </div>
                                             </div>
@@ -188,7 +215,8 @@ while ($record = mysqli_fetch_array($query)) {
                                         <div class="row mt-3">
                                             <div class="col lg-4">
                                                 <div class="form-floating mt-3">
-                                                    <select class="form-select" aria-label="Default select example" name="kategori_menu" required>
+                                                    <select class="form-select" aria-label="Default select example"
+                                                        name="kategori_menu" required>
                                                         <option selected hidden value="">Pilih Jenis Menu</option>
                                                         <?php
                                                         foreach ($sel_kategori as $row2) {
@@ -197,9 +225,9 @@ while ($record = mysqli_fetch_array($query)) {
                                                             } else {
                                                                 echo "<option value='" . $row2['id_kategori'] . "'>" . $row2['kategori_menu'] . "</option>";
                                                             }
-                                                        ?>
+                                                            ?>
 
-                                                        <?php
+                                                            <?php
                                                         }
                                                         ?>
                                                     </select>
@@ -211,7 +239,9 @@ while ($record = mysqli_fetch_array($query)) {
                                             </div>
                                             <div class="col lg-4">
                                                 <div class="form-floating mt-3">
-                                                    <input type="number" class="form-control" id="floatingHarga" placeholder="Masukan Harga" name="harga" value="<?php echo $row['harga'] ?>" required>
+                                                    <input type="number" class="form-control" id="floatingHarga"
+                                                        placeholder="Masukan Harga" name="harga"
+                                                        value="<?php echo $row['harga'] ?>" required>
                                                     <label for="floatingHarga">Harga</label>
                                                     <div class="invalid-feedback">
                                                         Harga tidak boleh kosong
@@ -220,10 +250,12 @@ while ($record = mysqli_fetch_array($query)) {
                                             </div>
                                             <div class="col lg-4">
                                                 <div class="form-floating mt-3">
-                                                    <input type="number" class="form-control" id="floatingStok" placeholder="Masukan Stok" name="stok" value="<?php echo $row['stok'] ?>" required>
-                                                    <label for="floatingStok">Stok</label>
+                                                    <input type="number" class="form-control" id="floatingStok"
+                                                        placeholder="Masukan Stok" name="pajak"
+                                                        value="<?php echo $row['pajak'] ?>" required>
+                                                    <label for="floatingStok">Margin</label>
                                                     <div class="invalid-feedback">
-                                                        Stok tidak boleh kosong
+                                                        Marjin tidak boleh kosong
                                                     </div>
                                                 </div>
                                             </div>
@@ -231,13 +263,16 @@ while ($record = mysqli_fetch_array($query)) {
                                         <div class="row mt-3">
                                             <div class="col">
                                                 <div class="form-floating mt-3">
-                                                    <select class="form-select" aria-label="Default select example" name="kios" required>
+                                                    <select class="form-select" aria-label="Default select example"
+                                                        name="kios" required>
                                                         <option selected hidden value="">Pilih Kios User</option>
                                                         <?php
                                                         foreach ($result2 as $row2) {
-                                                        ?>
-                                                            <option value="<?php echo $row2['nama'] ?>" <?php echo ($row['nama_toko'] == $row2['nama']) ? 'selected' : ''; ?>><?php echo $row2['nama'] ?> </option>
-                                                        <?php
+                                                            ?>
+                                                            <option value="<?php echo $row2['nama'] ?>" <?php echo ($row['nama_toko'] == $row2['nama']) ? 'selected' : ''; ?>>
+                                                                <?php echo $row2['nama'] ?>
+                                                            </option>
+                                                            <?php
                                                         }
                                                         ?>
                                                     </select>
@@ -249,8 +284,10 @@ while ($record = mysqli_fetch_array($query)) {
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary" name="input_menu_edit_proses">Simpan</button>
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary"
+                                                name="input_menu_edit_proses">Simpan</button>
                                         </div>
                                     </form>
                                 </div>
@@ -259,28 +296,35 @@ while ($record = mysqli_fetch_array($query)) {
                     </div>
 
                     <!-- Modal delete -->
-                    <div class="modal fade" id="ModalDelete<?php echo $row['id'] ?>" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal fade" id="ModalDelete<?php echo $row['id'] ?>" tabindex="-1"
+                        aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog modal-xl modal-fullscreen-md-down">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Delete</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form class="needs-validation" novalidate action="validate/validate_menu_delete.php" method="post">
+                                    <form class="needs-validation" novalidate action="validate/validate_menu_delete.php"
+                                        method="post">
                                         <input type="hidden" name="id" value="<?php echo $row['id'] ?>">
                                         <input type="hidden" name="foto" value="<?php echo $row['foto'] ?>">
                                         <div class="col-lg-12">
 
-                                            <h5>Apakah Anda yakin ingin menghapus menu <strong><?php echo $row['nama'] ?></strong>?</h5>
+                                            <h5>Apakah Anda yakin ingin menghapus menu
+                                                <strong><?php echo $row['nama'] ?></strong>?
+                                            </h5>
                                             <p>Data yang dihapus tidak dapat dikembalikan.</p>
 
                                         </div>
 
 
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-danger" name="input_menu_delete">Hapus Data</button>
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-danger" name="input_menu_delete">Hapus
+                                                Data</button>
                                         </div>
                                     </form>
                                 </div>
@@ -289,22 +333,27 @@ while ($record = mysqli_fetch_array($query)) {
                         </div>
                     </div>
                     <!-- Modal view -->
-                    <div class="modal fade" id="ModalView<?php echo $row['id'] ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal fade" id="ModalView<?php echo $row['id'] ?>" data-bs-backdrop="static"
+                        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog modal-xl modal-fullscreen-md-down">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Makanan Dan Minuman</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form class="needs-validation" novalidate action="validate/validate_menu.php" method="post" enctype="multipart/form-data">
+                                    <form class="needs-validation" novalidate action="validate/validate_menu.php"
+                                        method="post" enctype="multipart/form-data">
                                         <div class="row mt-3">
 
                                         </div>
                                         <div class="row mt-3">
                                             <div class="col">
                                                 <div class="form-floating">
-                                                    <input type="text" class="form-control" id="floatingNama" placeholder="Masukan Nama" name="nama_menu" value="<?php echo $row['nama'] ?>" disabled>
+                                                    <input type="text" class="form-control" id="floatingNama"
+                                                        placeholder="Masukan Nama" name="nama_menu"
+                                                        value="<?php echo $row['nama'] ?>" disabled>
                                                     <label for="floatingNama">Nama Makanan</label>
 
                                                 </div>
@@ -313,7 +362,9 @@ while ($record = mysqli_fetch_array($query)) {
                                         <div class="row mt-3">
                                             <div class="col">
                                                 <div class="form-floating">
-                                                    <input type="text" class="form-control" id="floatingKeterangan" placeholder="Masukan Keterangan" name="keterangan" value="<?php echo $row['keterangan'] ?>" disabled>
+                                                    <input type="text" class="form-control" id="floatingKeterangan"
+                                                        placeholder="Masukan Keterangan" name="keterangan"
+                                                        value="<?php echo $row['keterangan'] ?>" disabled>
                                                     <label for="floatingKeterangan">Keterangan</label>
                                                 </div>
                                             </div>
@@ -321,7 +372,8 @@ while ($record = mysqli_fetch_array($query)) {
                                         <div class="row mt-3">
                                             <div class="col lg-4">
                                                 <div class="form-floating mt-3">
-                                                    <select disabled class="form-select" aria-label="Default select example" name="kategori_menu" required>
+                                                    <select disabled class="form-select" aria-label="Default select example"
+                                                        name="kategori_menu" required>
                                                         <option selected hidden value="">Pilih Jenis Menu</option>
                                                         <?php
                                                         foreach ($sel_kategori as $row2) {
@@ -330,9 +382,9 @@ while ($record = mysqli_fetch_array($query)) {
                                                             } else {
                                                                 echo "<option value='" . $row2['kategori'] . "'>" . $row2['kategori_menu'] . "</option>";
                                                             }
-                                                        ?>
+                                                            ?>
 
-                                                        <?php
+                                                            <?php
                                                         }
                                                         ?>
                                                     </select>
@@ -344,7 +396,9 @@ while ($record = mysqli_fetch_array($query)) {
                                             </div>
                                             <div class="col lg-4">
                                                 <div class="form-floating mt-3">
-                                                    <input type="number" class="form-control" id="floatingHarga" placeholder="Masukan Harga" name="harga" value="<?php echo $row['harga'] ?>" disabled>
+                                                    <input type="number" class="form-control" id="floatingHarga"
+                                                        placeholder="Masukan Harga" name="harga"
+                                                        value="<?php echo $row['harga'] ?>" disabled>
                                                     <label for="floatingHarga">Harga</label>
                                                     <div class="invalid-feedback">
                                                         Harga tidak boleh kosong
@@ -353,10 +407,10 @@ while ($record = mysqli_fetch_array($query)) {
                                             </div>
                                             <div class="col lg-4">
                                                 <div class="form-floating mt-3">
-                                                    <input type="number" class="form-control" id="floatingStok" placeholder="Masukan Stok" name="stok" value="<?php echo $row['stok'] ?>" disabled>
-                                                    <label for="floatingStok">Stok</label>
+                                                    <input type="number" class="form-control" id="floatingStok" placeholder="Masukan Stok" name="pajak" value="<?php echo $row['pajak'] ?>" disabled>
+                                                    <label for="floatingStok">Margin</label>
                                                     <div class="invalid-feedback">
-                                                        Stok tidak boleh kosong
+                                                        Margin tidak boleh kosong
                                                     </div>
                                                 </div>
                                             </div>
@@ -364,13 +418,16 @@ while ($record = mysqli_fetch_array($query)) {
                                         <div class="row mt-3">
                                             <div class="col">
                                                 <div class="form-floating mt-3">
-                                                    <select disabled class="form-select" aria-label="Default select example" name="kios" required>
+                                                    <select disabled class="form-select" aria-label="Default select example"
+                                                        name="kios" required>
                                                         <option selected hidden value="">Pilih Kios User</option>
                                                         <?php
                                                         foreach ($result2 as $row2) {
-                                                        ?>
-                                                            <option value="<?php echo $row2['nama'] ?>" <?php echo ($row['nama_toko'] == $row2['nama']) ? 'selected' : ''; ?>><?php echo $row2['nama'] ?> </option>
-                                                        <?php
+                                                            ?>
+                                                            <option value="<?php echo $row2['nama'] ?>" <?php echo ($row['nama_toko'] == $row2['nama']) ? 'selected' : ''; ?>>
+                                                                <?php echo $row2['nama'] ?>
+                                                            </option>
+                                                            <?php
                                                         }
                                                         ?>
                                                     </select>
@@ -382,22 +439,24 @@ while ($record = mysqli_fetch_array($query)) {
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary" name="input_menu_proses">Simpan</button>
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary"
+                                                name="input_menu_proses">Simpan</button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                <?php
+                    <?php
                 }
                 ?>
                 <?php
                 if (empty($result)) {
                     echo "<div class='alert alert-warning'>Data tidak ditemukan</div>";
                 } else {
-                ?>
+                    ?>
                     <div class="table-responsive-lg-12">
                         <table class="table table-hover" id="table_menu">
                             <thead>
@@ -409,13 +468,12 @@ while ($record = mysqli_fetch_array($query)) {
                                     <th scope="col">Jenis Menu</th>
                                     <th scope="col">Kategori</th>
                                     <th scope="col">Harga</th>
-                                    <th scope="col">Stock</th>
                                     <th scope="col">Nama Toko</th>
                                     <?php
                                     if ($_SESSION["level_kantin"] == 1) {
-                                    ?>
+                                        ?>
                                         <th scope="col">Aksi</th>
-                                    <?php
+                                        <?php
                                     } else {
                                     }
                                     ?>
@@ -425,45 +483,51 @@ while ($record = mysqli_fetch_array($query)) {
                                 <?php
                                 $id_nomor = 1;
                                 foreach ($result as $row) {
-                                ?>
+                                    ?>
                                     <tr>
                                         <th scope="row"><?php echo $id_nomor++ ?></th>
                                         <td>
                                             <div style="width: 100px;">
-                                                <img src="assets/img/<?php echo $row['foto'] ?>" class="img-thumbnail" alt="...">
+                                                <img src="assets/img/<?php echo $row['foto'] ?>" class="img-thumbnail"
+                                                    alt="...">
                                             </div>
                                         </td>
                                         <td><?php echo $row['nama'] ?></td>
                                         <td><?php echo $row['keterangan'] ?></td>
                                         <td><?php echo ($row['jenis_menu'] == 1) ? "Makanan" : "Minuman" ?></td>
                                         <td><?php echo $row['kategori_menu'] ?></td>
-                                        <td><?php echo $row['harga'] ?></td>
-                                        <td><?php echo $row['stok'] ?></td>
+                                        <td><?php echo $row['harga'] + $row['pajak'] ?></td>
                                         <td><?php echo $row['nama_toko'] ?></td>
                                         <?php
                                         if ($_SESSION["level_kantin"] == 1) {
-                                        ?>
+                                            ?>
                                             <td>
                                                 <div class="d-flex">
-                                                    <button class="btn btn-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#ModalView<?php echo $row['id'] ?>"> <i class="bi bi-eye-fill"></i></button>
-                                                    <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#ModalEdit<?php echo $row['id'] ?>"> <i class="bi bi-pencil-fill"></i></button>
-                                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#ModalDelete<?php echo $row['id'] ?>"> <i class="bi bi-trash-fill"></i></button>
+                                                    <button class="btn btn-info btn-sm me-2" data-bs-toggle="modal"
+                                                        data-bs-target="#ModalView<?php echo $row['id'] ?>"> <i
+                                                            class="bi bi-eye-fill"></i></button>
+                                                    <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal"
+                                                        data-bs-target="#ModalEdit<?php echo $row['id'] ?>"> <i
+                                                            class="bi bi-pencil-fill"></i></button>
+                                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                                        data-bs-target="#ModalDelete<?php echo $row['id'] ?>"> <i
+                                                            class="bi bi-trash-fill"></i></button>
                                                 </div>
 
                                             </td>
-                                        <?php
+                                            <?php
                                         } else {
                                         }
                                         ?>
 
                                     </tr>
-                                <?php
+                                    <?php
                                 }
                                 ?>
                             </tbody>
                         </table>
                     </div>
-                <?php
+                    <?php
                 }
                 ?>
 

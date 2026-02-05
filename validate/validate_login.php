@@ -15,6 +15,7 @@ if (!empty($_POST['submit_validate'])) {
             $_SESSION['username_kantin'] = $username;
             $_SESSION['level_kantin'] = $hasil['level'];
             $_SESSION['id_kantin'] = $hasil['id'];
+            $_SESSION['nama_toko_kantin'] = $hasil['Kios'];
             header('location:../home');
       } else { ?>
             <script>

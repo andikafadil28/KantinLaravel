@@ -9,7 +9,7 @@ if (isset($_GET['x']) && $_GET['x'] == 'home') {
 } elseif (isset($_GET['x']) && $_GET['x'] == 'order') {
     $page = 'order.php';
     include "main.php";
-}elseif (isset($_GET['x']) && $_GET['x'] == 'orderitem') {
+} elseif (isset($_GET['x']) && $_GET['x'] == 'orderitem') {
     $page = 'order_item.php';
     include "main.php";
 } elseif (isset($_GET['x']) && $_GET['x'] == 'user') {
@@ -33,6 +33,18 @@ if (isset($_GET['x']) && $_GET['x'] == 'home') {
     include "main.php";
 } elseif (isset($_GET['x']) && $_GET['x'] == 'history') {
     $page = 'history.php';
+    include "main.php";
+} elseif (isset($_GET['x']) && $_GET['x'] == 'laporanrs') {
+    $page = 'laporan_rs.php';
+    include "main.php";
+} elseif (isset($_GET['x']) && $_GET['x'] == 'laporantoko') {
+    $page = 'laporan_toko.php';
+    include "main.php";
+}elseif (isset($_GET['x']) && $_GET['x'] == 'rekapmenurs') {
+    $page = 'rekapmenurs.php';
+    include "main.php";
+}elseif (isset($_GET['x']) && $_GET['x'] == 'rekaprs') {
+    $page = 'rekaprs.php';
     include "main.php";
 } elseif (isset($_GET['x']) && $_GET['x'] == 'login') {
     include "login.php";

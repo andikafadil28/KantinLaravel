@@ -11,7 +11,7 @@ $hasil = mysqli_fetch_array($query);
 <?php include 'head.php'; ?>
 
 
-<body id="page-top">
+<body id="page-top" class="sidebar-toggled">
 
       <!-- Page Wrapper -->
       <div id="wrapper">

@@ -163,7 +163,7 @@ if (!empty($_SESSION["username_kantin"])) {
     </div>
     <main class="form-signin w-100 m-auto">
         <form class="needs-validation " novalidate action="validate/validate_login.php" method="post"> <img class="mb-4"
-                src="assets/brand/RSLogo.svg" alt="" width="72" height="57">
+                src="assets/brand/logo.png" alt="" width="72" height="57">
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
             <div class="form-floating">
                 <input name="username" type="text" class="form-control" id="floatingInput" placeholder="sakinakantin"
