@@ -143,7 +143,13 @@ include "Database/connect.php";
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 5
+                        },
+                        grid: {
+                            drawBorder: false
+                        }
                     }
                 }
             }
