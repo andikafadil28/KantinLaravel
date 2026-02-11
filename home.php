@@ -1,7 +1,9 @@
 <?php
+// koneksi database
 include "Database/connect.php";
 ?>
 <div class="container-fluid bg-light min-vh-100 p-0">
+    <!-- hero -->
     <header class="p-5 text-center text-white" style="background-image: url('URL_GAMBAR_MAKANAN_KEREN_DI_SINI'); background-size: cover; background-position: center; background-color: #ff6347;">
         <div style="background-color: rgba(0, 0, 0, 0.4); padding: 20px; border-radius: 10px;">
             <i class="bi bi-fork-knife display-4 mb-3"></i>
@@ -13,8 +15,10 @@ include "Database/connect.php";
         </div>
     </header>
     <?php
+    // data menu terlaris
     include "Database/Query/menu_telaris.php";
     ?>
+    <!-- chart harian -->
     <div class="container my-5">
         <div class="card shadow-sm border-0">
             <div class="card-body">
@@ -22,7 +26,7 @@ include "Database/connect.php";
                     <h5 class="fw-bold mb-0">
                         📊 Menu Terlaris Hari Ini
                     </h5>
-                    <span class="badge bg-warning text-dark">
+                    <span class="badge bg-info text-white">
                         Update: Hari ini
                     </span>
                 </div>
@@ -31,7 +35,25 @@ include "Database/connect.php";
             </div>
         </div>
     </div>
+    <!-- chart mingguan -->
+    <div class="container my-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">
+                        📊 Menu Terlaris Minggu Ini
+                    </h5>
+                    <span class="badge bg-info text-white">
+                        Update: Minggu ini
+                    </span>
+                </div>
 
+                <canvas id="menuTerlarisMingguanChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- keunggulan -->
     <div class="container py-5">
         <h2 class="text-center mb-5 fw-bold text-dark">Mengapa Memilih Sakina Kantin?</h2>
         <div class="row g-4 text-center">
@@ -66,7 +88,7 @@ include "Database/connect.php";
     </div>
 
 
-
+    <!-- footer -->
     <footer class="text-center py-3 bg-dark text-white">
         &copy; 2025 Sakina Kantin. Semua Hak Dilindungi.
     </footer>
@@ -76,28 +98,34 @@ include "Database/connect.php";
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    // data chart
     const labels = <?= json_encode($menu) ?>;
     const dataValues = <?= json_encode($total) ?>;
+    const labelsMingguan = <?= json_encode($menu_mingguan) ?>;
+    const dataValuesMingguan = <?= json_encode($total_mingguan) ?>;
+    const colors = ['#ff7a18', '#ffc107', '#4caf50', '#17a2b8', '#dc3545'];
 
-    if (labels.length === 0) {
-        document.getElementById('menuTerlarisChart').outerHTML = `
+    // render chart
+    function renderMenuChart(canvasId, labelsData, valuesData, emptyMessage) {
+        if (labelsData.length === 0) {
+            document.getElementById(canvasId).outerHTML = `
     <div class="text-center py-5 text-muted">
       <i class="bi bi-graph-up fs-1 mb-3"></i>
-      <p>Belum ada penjualan hari ini</p>
+      <p>${emptyMessage}</p>
     </div>
   `;
-    } else {
-        const ctx = document.getElementById('menuTerlarisChart');
+            return;
+        }
+
+        const ctx = document.getElementById(canvasId);
 
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: labels,
+                labels: labelsData,
                 datasets: [{
-                    data: dataValues,
-                    backgroundColor: labels.map(() => [
-                        '#ff7a18', '#ffc107', '#4caf50', '#17a2b8', '#dc3545'
-                    ][Math.floor(Math.random() * 5)]),
+                    data: valuesData,
+                    backgroundColor: labelsData.map(() => colors[Math.floor(Math.random() * colors.length)]),
                     borderRadius: 8
                 }]
             },
@@ -121,4 +149,8 @@ include "Database/connect.php";
             }
         });
     }
+
+    // jalankan chart
+    renderMenuChart('menuTerlarisChart', labels, dataValues, 'Belum ada penjualan hari ini');
+    renderMenuChart('menuTerlarisMingguanChart', labelsMingguan, dataValuesMingguan, 'Belum ada penjualan minggu ini');
 </script>
