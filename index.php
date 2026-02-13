@@ -49,6 +49,9 @@ if (isset($_GET['x']) && $_GET['x'] == 'home') {
 } elseif (isset($_GET['x']) && $_GET['x'] == 'rekapkeuangan') {
     $page = 'laporan_keuangan.php';
     include "main.php";
+} elseif (isset($_GET['x']) && $_GET['x'] == 'rekapkeuanganmenu') {
+    $page = 'laporan_keuangan_menu.php';
+    include "main.php";
 } elseif (isset($_GET['x']) && $_GET['x'] == 'login') {
     include "login.php";
 } elseif (isset($_GET['x']) && $_GET['x'] == 'logout') {

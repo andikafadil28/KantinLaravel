@@ -18,5 +18,6 @@ tb_menu.pajak * SUM(tb_list_order.jumlah) AS Keuntungan_RS,
 FROM tb_list_order
 RIGHT join tb_order on tb_order.id_order = tb_list_order.kode_order
 LEFT JOIN tb_menu on tb_menu.id = tb_list_order.menu
+$where_clause
 GROUP BY tb_menu.nama
-ORDER BY `tb_order`.`waktu_order` DESC;";
+ORDER BY `tb_order`.`waktu_order` DESC";

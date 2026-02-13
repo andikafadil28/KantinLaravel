@@ -46,6 +46,7 @@
                 <a class="collapse-item" href="rekaprs">Rekap RS</a>
                 <a class="collapse-item" href="rekapmenurs">Rekap Kantin</a>
                 <a class="collapse-item" href="rekapkeuangan">Rekap Keuangan</a>
+                <a class="collapse-item" href="rekapkeuanganmenu">Rekap Keuangan Menu</a>
             </div>
         </div>
     </li>
