@@ -1,6 +1,9 @@
 <!-- Bootstrap core JavaScript-->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
 <!-- Core plugin JavaScript-->
 <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
@@ -15,8 +18,25 @@
 <script src="js/demo/chart-area-demo.js"></script>
 <script src="js/demo/chart-pie-demo.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-
-
-
 <!-- Toastify JS -->
+<script>
+if (window.jQuery && $.fn && $.fn.DataTable) {
+    $.fn.dataTable.ext.errMode = 'none';
+
+    if (typeof window.DataTable === 'undefined') {
+        window.DataTable = function(selector, options) {
+            const defaults = {
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100],
+                scrollCollapse: false
+            };
+
+            return $(selector).DataTable($.extend(true, {}, defaults, options || {}));
+        };
+
+        window.DataTable.isDataTable = function(selector) {
+            return $.fn.DataTable.isDataTable(selector);
+        };
+    }
+}
+</script>

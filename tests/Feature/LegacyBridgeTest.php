@@ -28,4 +28,41 @@ class LegacyBridgeTest extends TestCase
         $response->assertOk();
         $response->assertHeader('content-type');
     }
+
+    public function test_sensitive_legacy_files_are_not_exposed(): void
+    {
+        $this->get('/legacy/composer.json')->assertNotFound();
+        $this->get('/legacy/vendor/autoload.php')->assertNotFound();
+    }
+
+    public function test_old_logout_get_route_no_longer_logs_out_user(): void
+    {
+        $response = $this->get('/logout');
+
+        $response->assertRedirect('/app/login');
+    }
+
+    public function test_legacy_login_post_is_not_blocked_by_csrf(): void
+    {
+        $response = $this->post('/legacy/validate/validate_login.php', [
+            'username' => 'user-tidak-ada',
+            'password' => 'salah',
+            'submit_validate' => 'isi',
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_legacy_login_post_still_works_with_invalid_php_session_cookie(): void
+    {
+        $response = $this
+            ->withCookie('PHPSESSID', 'eyJinvalid/session==')
+            ->post('/legacy/validate/validate_login.php', [
+                'username' => 'user-tidak-ada',
+                'password' => 'salah',
+                'submit_validate' => 'isi',
+            ]);
+
+        $response->assertStatus(200);
+    }
 }

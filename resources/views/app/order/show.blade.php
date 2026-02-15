@@ -196,8 +196,112 @@
             <div class="col-md-4"><label class="form-label">Diskon (Rp)</label><input class="form-control" name="diskon" type="text" inputmode="decimal" value="{{ old('diskon', number_format($diskonExisting, 0, ',', '.')) }}" {{ $isPaid ? 'readonly' : '' }}></div>
             <div class="col-md-4"><label class="form-label">Bayar (Rp)</label><input class="form-control" name="bayar" type="text" inputmode="decimal" value="{{ old('bayar', number_format($grandTotal, 0, ',', '.')) }}" {{ $isPaid ? 'readonly' : '' }}></div>
             <div class="col-md-4"><label class="form-label">PPN</label><input class="form-control" value="{{ number_format($totalPpn, 0, ',', '.') }}" readonly></div>
-            <div class="col-12"><button class="btn {{ $isPaid ? 'btn-secondary' : 'btn-primary' }}" type="submit" {{ $isPaid ? 'disabled' : '' }}><i class="bi bi-cash-coin me-1"></i>Proses Bayar</button></div>
+            <div class="col-12 d-flex flex-wrap gap-2 align-items-end">
+                <button class="btn {{ $isPaid ? 'btn-secondary' : 'btn-primary' }}" type="submit" {{ $isPaid ? 'disabled' : '' }}>
+                    <i class="bi bi-cash-coin me-1"></i>Proses Bayar
+                </button>
+                <button
+                    type="button"
+                    class="btn {{ $isPaid ? 'btn-info' : 'btn-secondary' }}"
+                    data-receipt-url="{{ route('app.orders.receipt', ['id' => $order->id_order]) }}"
+                    onclick="printReceipt(this.dataset.receiptUrl)"
+                    {{ $isPaid ? '' : 'disabled' }}
+                >
+                    <i class="bi bi-printer me-1"></i>Print Struk
+                </button>
+                @if($isPaid)
+                    <div class="d-flex align-items-center gap-2 ms-sm-2">
+                        <label for="printModeSelect" class="small text-muted mb-0">Mode Print</label>
+                        <select id="printModeSelect" class="form-select form-select-sm" style="width: 120px;">
+                            <option value="inline">Inline</option>
+                            <option value="popup">Popup</option>
+                        </select>
+                    </div>
+                @else
+                    <span class="small text-muted align-self-center">Print aktif setelah pembayaran berhasil.</span>
+                @endif
+            </div>
         </form>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    const PRINT_MODE_KEY = 'kantin.print.mode';
+
+    function getPrintMode() {
+        const mode = localStorage.getItem(PRINT_MODE_KEY);
+        return mode === 'popup' ? 'popup' : 'inline';
+    }
+
+    function setPrintMode(mode) {
+        localStorage.setItem(PRINT_MODE_KEY, mode === 'popup' ? 'popup' : 'inline');
+    }
+
+    function printReceipt(url) {
+        if (getPrintMode() === 'popup') {
+            openPrintPopup(url);
+            return;
+        }
+        printReceiptInline(url);
+    }
+
+    function openPrintPopup(url) {
+        const popup = window.open(url + (url.includes('?') ? '&' : '?') + 'autoprint=1', 'print_struk', 'width=420,height=700,menubar=no,toolbar=no,location=no,status=no');
+        if (popup) {
+            popup.focus();
+        }
+    }
+
+    function printReceiptInline(url) {
+        if (!url) return;
+
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.src = url;
+
+        iframe.onload = function () {
+            try {
+                if (!iframe.contentWindow) {
+                    openPrintPopup(url);
+                    return;
+                }
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+            } catch (_e) {
+                openPrintPopup(url);
+            }
+
+            setTimeout(function () {
+                if (iframe.parentNode) {
+                    iframe.parentNode.removeChild(iframe);
+                }
+            }, 1500);
+        };
+
+        iframe.onerror = function () {
+            openPrintPopup(url);
+            if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+            }
+        };
+
+        document.body.appendChild(iframe);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const select = document.getElementById('printModeSelect');
+        if (!select) return;
+        select.value = getPrintMode();
+        select.addEventListener('change', function () {
+            setPrintMode(select.value);
+        });
+    });
+</script>
+@endpush

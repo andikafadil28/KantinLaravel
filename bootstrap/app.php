@@ -11,6 +11,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->encryptCookies(except: [
+            'PHPSESSID',
+            'LEGACYSESSID',
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'legacy/validate/*',
+            'legacy/proses/*',
+            'legacy/excel_export/*',
+            'legacy/inc/modal/*',
+        ]);
+
         $middleware->alias([
             'kantin.auth' => \App\Http\Middleware\EnsureKantinAuthenticated::class,
         ]);

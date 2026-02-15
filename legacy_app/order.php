@@ -242,13 +242,19 @@ while ($record2 = mysqli_fetch_array($query2)) {
 <script>
     // Pastikan DataTables sudah dimuat
     document.addEventListener('DOMContentLoaded', function () {
-        if (typeof DataTable !== 'undefined') {
-            let table = new DataTable('#table_order', {
-                responsive: true,
-                language: {
-                    // Opsional: ganti ke URL DataTables bahasa Indonesia jika tersedia
-                    // url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json' 
-                }
+        if (window.jQuery && $.fn && $.fn.DataTable) {
+            if (!$.fn.DataTable.isDataTable('#table_order')) {
+                $('#table_order').DataTable({
+                    pageLength: 10,
+                    lengthMenu: [10, 25, 50, 100],
+                    scrollCollapse: false
+                });
+            }
+        } else if (typeof DataTable !== 'undefined') {
+            new DataTable('#table_order', {
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100],
+                scrollCollapse: false
             });
         }
     });

@@ -25,6 +25,13 @@
         border-bottom: 0;
     }
 
+    .order-sticky-toolbar {
+        position: sticky;
+        top: .3rem;
+        z-index: 6;
+        backdrop-filter: blur(3px);
+    }
+
     .order-info-note {
         background: #eef2ff;
         border: 1px solid #dbe4ff;
@@ -46,13 +53,27 @@
 
     .order-actions .btn {
         border-radius: .4rem;
+        min-width: 2.1rem;
+        height: 2.05rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .order-paybox {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: .5rem;
-        padding: .45rem;
+        padding: .45rem .5rem;
+    }
+
+    .order-empty {
+        padding: 1rem 0 !important;
+    }
+
+    .order-empty .icon {
+        font-size: 1.6rem;
+        color: #94a3b8;
     }
 
     @media (max-width: 992px) {
@@ -72,7 +93,7 @@
 @endpush
 
 @section('content')
-<div class="card order-page-section shadow-lg border-0 mb-3">
+<div class="card order-page-section shadow-lg border-0 mb-3 order-sticky-toolbar">
     <div class="card-header bg-dark text-white">
         <i class="bi bi-gear-fill me-2"></i>Manajemen Transaksi Order
     </div>
@@ -123,7 +144,7 @@
             <thead>
             <tr class="table-head-soft">
                 <th>No</th>
-                <th>Kode</th><th>Pelanggan</th><th>Meja</th><th>Kios</th><th>Total</th><th>Kasir</th><th>Status</th><th style="min-width:280px;">Aksi</th>
+                <th>Kode</th><th>Pelanggan</th><th>Meja</th><th>Kios</th><th>Total</th><th>Kasir</th><th>Status</th><th style="min-width:235px;">Aksi</th>
             </tr>
             </thead>
             <tbody>
@@ -155,45 +176,48 @@
                         @endif
                     </td>
                     <td>
-                        <div class="table-actions mb-2 order-actions">
+                        <div class="table-actions order-actions">
                             <a class="btn btn-sm btn-info" title="Detail" href="{{ url('/app/orders/'.$order->id_order) }}"><i class="bi bi-eye-fill"></i></a>
                             <button class="btn btn-sm btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#editOrderModal{{ $order->id_order }}">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
-                        </div>
-                        @if(!$isPaid)
-                            <form method="post" action="{{ route('app.orders.pay', $order->id_order) }}" class="row g-1 mb-2 order-paybox">
-                                @csrf
-                                <div class="col-6">
-                                    <input class="form-control form-control-sm" name="diskon" placeholder="Diskon" value="0">
-                                </div>
-                                <div class="col-6">
-                                    <input class="form-control form-control-sm" name="bayar" placeholder="Nominal Bayar" value="{{ number_format($final, 0, ',', '.') }}" required>
-                                </div>
-                                <div class="col-12">
-                                    <button class="btn btn-sm btn-primary w-100" type="submit"><i class="bi bi-cash-coin me-1"></i>Bayar Cepat</button>
-                                </div>
-                            </form>
-                        @endif
-                        <div class="table-actions">
+                            @if(!$isPaid)
+                                <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#quickPay{{ $order->id_order }}" aria-expanded="false" aria-controls="quickPay{{ $order->id_order }}" title="Bayar Cepat">
+                                    <i class="bi bi-cash-coin"></i>
+                                </button>
+                            @endif
                             <form method="post" action="{{ route('app.orders.destroy', $order->id_order) }}" onsubmit="return confirm('Hapus order ini?')">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-sm btn-danger" title="Hapus" type="submit"><i class="bi bi-trash-fill"></i></button>
                             </form>
                         </div>
+                        @if(!$isPaid)
+                            <div class="collapse mt-2" id="quickPay{{ $order->id_order }}">
+                                <form method="post" action="{{ route('app.orders.pay', $order->id_order) }}" class="row g-1 order-paybox">
+                                    @csrf
+                                    <div class="col-6">
+                                        <input class="form-control form-control-sm" name="diskon" placeholder="Diskon" value="0">
+                                    </div>
+                                    <div class="col-6">
+                                        <input class="form-control form-control-sm" name="bayar" placeholder="Nominal Bayar" value="{{ number_format($final, 0, ',', '.') }}" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="btn btn-sm btn-primary w-100" type="submit"><i class="bi bi-cash-coin me-1"></i>Bayar Cepat</button>
+                                    </div>
+                                </form>
+                            </div>
+                        @endif
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">Belum ada order.</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
+                    <td class="text-center order-empty" colspan="9">
+                        <div class="d-flex flex-column align-items-center gap-1">
+                            <i class="bi bi-inbox icon"></i>
+                            <div class="fw-bold">Belum ada order</div>
+                            <div class="small text-muted">Buat order baru dari form di atas untuk mulai transaksi.</div>
+                        </div>
+                    </td>
                 </tr>
             @endforelse
             </tbody>

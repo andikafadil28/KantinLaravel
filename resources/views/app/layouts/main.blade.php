@@ -26,6 +26,17 @@
             color: #5a5c69;
         }
 
+        a:focus-visible,
+        button:focus-visible,
+        .btn:focus-visible,
+        .nav-link:focus-visible,
+        .form-control:focus-visible,
+        .form-select:focus-visible {
+            outline: 2px solid #1d4ed8;
+            outline-offset: 2px;
+            box-shadow: none !important;
+        }
+
         .app-shell {
             display: flex;
             min-height: 100vh;
@@ -79,6 +90,7 @@
 
         .app-brand .label,
         .app-sidebar .label {
+            display: inline-block;
             transition: opacity .15s;
         }
 
@@ -583,57 +595,84 @@
             vertical-align: middle;
         }
 
+        .app-toast-stack {
+            z-index: 1095;
+            top: 74px;
+        }
+
+        .report-loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, .82);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            backdrop-filter: blur(1.5px);
+        }
+
+        .report-loading-overlay.active {
+            display: flex;
+        }
+
         @media (min-width: 993px) {
-            body.sidebar-mini .app-sidebar {
-                width: var(--sidebar-mini-width);
+            .app-sidebar {
+                width: var(--sidebar-mini-width) !important;
+                flex: 0 0 var(--sidebar-mini-width);
             }
 
-            body.sidebar-mini .app-brand {
+            .app-brand {
                 justify-content: center;
             }
 
-            body.sidebar-mini .app-brand .label,
-            body.sidebar-mini .app-sidebar .label,
-            body.sidebar-mini .app-sidebar .menu-title,
-            body.sidebar-mini .app-sidebar .collapse-toggle::after,
-            body.sidebar-mini .sidebar-toggle-btn .label {
+            .app-brand .label,
+            .app-sidebar .label,
+            .app-sidebar .menu-title,
+            .app-sidebar .collapse-toggle::after,
+            .sidebar-toggle-btn .label {
+                display: inline-block;
                 opacity: 0;
-                width: 0;
+                max-width: 0;
                 overflow: hidden;
                 white-space: nowrap;
+                visibility: hidden;
+                pointer-events: none;
             }
 
-            body.sidebar-mini .app-sidebar .nav-link {
+            .app-sidebar .nav-link {
                 justify-content: center;
             }
 
-            body.sidebar-mini .app-sidebar .collapse {
+            .app-sidebar .collapse {
                 display: none !important;
             }
 
-            body.sidebar-mini .app-main {
+            .app-main {
                 margin-left: 0;
             }
 
-            body.sidebar-mini .app-sidebar:hover {
-                width: var(--sidebar-width);
+            body.sidebar-hover-open .app-sidebar {
+                width: var(--sidebar-width) !important;
+                flex: 0 0 var(--sidebar-width);
             }
 
-            body.sidebar-mini .app-sidebar:hover .app-brand .label,
-            body.sidebar-mini .app-sidebar:hover .label,
-            body.sidebar-mini .app-sidebar:hover .menu-title,
-            body.sidebar-mini .app-sidebar:hover .collapse-toggle::after,
-            body.sidebar-mini .app-sidebar:hover .sidebar-toggle-btn .label {
+            body.sidebar-hover-open .app-brand .label,
+            body.sidebar-hover-open .label,
+            body.sidebar-hover-open .menu-title,
+            body.sidebar-hover-open .collapse-toggle::after,
+            body.sidebar-hover-open .sidebar-toggle-btn .label {
                 opacity: 1;
-                width: auto;
+                max-width: 220px;
                 overflow: visible;
+                visibility: visible;
+                pointer-events: auto;
             }
 
-            body.sidebar-mini .app-sidebar:hover .nav-link {
+            body.sidebar-hover-open .app-sidebar .nav-link {
                 justify-content: flex-start;
             }
 
-            body.sidebar-mini .app-sidebar:hover .collapse.show {
+            body.sidebar-hover-open .app-sidebar .collapse.show {
                 display: block !important;
             }
         }
@@ -784,11 +823,6 @@
         @endif
 
         <hr class="sidebar-divider d-none d-md-block">
-        <div class="sidebar-toggle-wrap d-none d-lg-block">
-            <button type="button" id="sidebarToggleDesktop" class="sidebar-toggle-btn" aria-label="Toggle Sidebar">
-                <i class="bi bi-chevron-left"></i><span class="label"></span>
-            </button>
-        </div>
     </aside>
     <div id="sidebarBackdrop" class="sidebar-backdrop d-lg-none"></div>
 
@@ -836,12 +870,29 @@
                 @endif
             </div>
 
-            @if(session('ok'))
-                <div class="alert alert-success">{{ session('ok') }}</div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert alert-danger">{{ $errors->first() }}</div>
+            @if(session('ok') || $errors->any())
+                <div class="toast-container position-fixed end-0 p-3 app-toast-stack">
+                    @if(session('ok'))
+                        <div class="toast align-items-center text-bg-success border-0 js-app-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2800">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <i class="bi bi-check-circle-fill me-1"></i>{{ session('ok') }}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    @endif
+                    @if($errors->any())
+                        <div class="toast align-items-center text-bg-danger border-0 js-app-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3600">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <i class="bi bi-exclamation-octagon-fill me-1"></i>{{ $errors->first() }}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    @endif
+                </div>
             @endif
 
             @yield('content')
@@ -854,47 +905,50 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const sidebarDesktopKey = 'kantin.sidebar.mini';
-        const sidebarToggleDesktop = document.getElementById('sidebarToggleDesktop');
-        const sidebarIcon = sidebarToggleDesktop ? sidebarToggleDesktop.querySelector('i') : null;
+        const sidebar = document.getElementById('accordionSidebar');
+        let sidebarHoverTimer = null;
 
         function applyDesktopSidebarState() {
             if (window.matchMedia('(min-width: 993px)').matches) {
-                const isMini = localStorage.getItem(sidebarDesktopKey) === '1';
-                document.body.classList.toggle('sidebar-mini', isMini);
-                document.body.classList.toggle('sidebar-toggled', isMini);
-                const sidebar = document.getElementById('accordionSidebar');
-                if (sidebar) {
-                    sidebar.classList.toggle('toggled', isMini);
-                }
-                if (sidebarToggleDesktop) {
-                    const label = sidebarToggleDesktop.querySelector('.label');
-                    if (label) {
-                        label.textContent = '';
-                    }
-                    if (sidebarIcon) {
-                        sidebarIcon.className = isMini ? 'bi bi-chevron-right' : 'bi bi-chevron-left';
-                    }
-                }
+                // Desktop mini state is handled purely by CSS.
             } else {
-                document.body.classList.remove('sidebar-mini');
-                document.body.classList.remove('sidebar-toggled');
-                const sidebar = document.getElementById('accordionSidebar');
-                if (sidebar) {
-                    sidebar.classList.remove('toggled');
-                }
+                document.body.classList.remove('sidebar-hover-open');
             }
         }
 
         applyDesktopSidebarState();
         window.addEventListener('resize', applyDesktopSidebarState);
 
-        if (sidebarToggleDesktop) {
-            sidebarToggleDesktop.addEventListener('click', function () {
-                const nextMini = !document.body.classList.contains('sidebar-mini');
-                document.body.classList.toggle('sidebar-mini', nextMini);
-                localStorage.setItem(sidebarDesktopKey, nextMini ? '1' : '0');
-                applyDesktopSidebarState();
+        if (sidebar) {
+            sidebar.addEventListener('mouseenter', function () {
+                if (!window.matchMedia('(min-width: 993px)').matches) {
+                    return;
+                }
+                if (sidebarHoverTimer) {
+                    clearTimeout(sidebarHoverTimer);
+                }
+                sidebarHoverTimer = setTimeout(function () {
+                    document.body.classList.add('sidebar-hover-open');
+                }, 60);
+            });
+
+            sidebar.addEventListener('mouseleave', function () {
+                if (!window.matchMedia('(min-width: 993px)').matches) {
+                    return;
+                }
+                if (sidebarHoverTimer) {
+                    clearTimeout(sidebarHoverTimer);
+                }
+                document.body.classList.remove('sidebar-hover-open');
+            });
+
+            sidebar.addEventListener('click', function (event) {
+                if (!window.matchMedia('(min-width: 993px)').matches) {
+                    return;
+                }
+                if (event.target.closest('.collapse') || event.target.closest('[data-bs-toggle="collapse"]')) {
+                    document.body.classList.add('sidebar-hover-open');
+                }
             });
         }
 
@@ -983,6 +1037,38 @@
                 });
             }
         }
+
+        if (window.bootstrap && typeof window.bootstrap.Toast === 'function') {
+            document.querySelectorAll('.js-app-toast').forEach(function (el) {
+                window.bootstrap.Toast.getOrCreateInstance(el).show();
+            });
+        }
+
+        document.querySelectorAll('form').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+                if (!submitBtn || submitBtn.dataset.loadingBound === '1') {
+                    return;
+                }
+                submitBtn.dataset.loadingBound = '1';
+                submitBtn.dataset.originalHtml = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Memproses...';
+            });
+        });
+
+        document.querySelectorAll('.js-report-filter').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                const targetId = form.dataset.loadingTarget || '';
+                if (!targetId) {
+                    return;
+                }
+                const overlay = document.getElementById(targetId);
+                if (overlay) {
+                    overlay.classList.add('active');
+                }
+            });
+        });
     });
 </script>
 @stack('scripts')

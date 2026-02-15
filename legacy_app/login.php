@@ -4,8 +4,6 @@ if (!empty($_SESSION["username_kantin"])) {
     header('location:home');
 }
 ?>
-
-<?php include 'head.php'; ?>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
 
@@ -214,4 +212,3 @@ if (!empty($_SESSION["username_kantin"])) {
 </body>
 
 </html>
-<?php include 'footerJS.php'; ?>

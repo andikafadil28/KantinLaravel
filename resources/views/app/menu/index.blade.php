@@ -11,13 +11,38 @@
 </nav>
 @endsection
 
+@push('styles')
+<style>
+    .menu-page-section {
+        border: 1px solid #e3e6f0;
+        border-radius: .7rem;
+        overflow: hidden;
+    }
+
+    .menu-page-section .card-header {
+        background: #111827;
+        color: #fff;
+        border-bottom: 0;
+    }
+
+    .app-empty-state {
+        padding: 1rem 0 !important;
+    }
+
+    .app-empty-state .icon {
+        font-size: 1.55rem;
+        color: #94a3b8;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="card shadow-lg border-0 mb-3">
-    <div class="card-header bg-dark text-white fw-bold">
+<div class="card menu-page-section shadow-lg border-0 mb-3">
+    <div class="card-header fw-bold">
         <i class="bi bi-fork-knife me-2"></i>Menu
     </div>
     <div class="card-body">
-        <form method="post" action="{{ route('app.menu.store') }}" enctype="multipart/form-data" class="row g-3">
+        <form method="post" action="{{ route('app.menu.store') }}" enctype="multipart/form-data" class="row g-3 legacy-form-compact">
             @csrf
             <div class="col-md-4">
                 <label class="form-label">Nama</label>
@@ -62,8 +87,8 @@
     </div>
 </div>
 
-<div class="card shadow-lg border-0">
-    <div class="card-header fw-bold">Daftar Menu</div>
+<div class="card menu-page-section shadow-lg border-0">
+    <div class="card-header fw-bold"><i class="bi bi-list-ul me-2"></i>Daftar Menu</div>
     <div class="card-body table-responsive">
         <table class="table table-striped table-hover table-bordered caption-top align-middle js-datatable">
             <caption class="fw-bold">Daftar Menu</caption>
@@ -93,26 +118,26 @@
                     <td>{{ number_format((float)$menu->pajak, 0, ',', '.') }}</td>
                     <td>
                         <div class="table-actions">
-                            <button class="btn btn-sm btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#editMenuModal{{ $menu->id }}">
+                            <button class="btn btn-sm btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#editMenuModal{{ $menu->id }}" aria-label="Edit menu {{ $menu->nama }}" title="Edit menu">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
                                 <form method="post" action="{{ route('app.menu.destroy', $menu->id) }}" onsubmit="return confirm('Hapus menu ini?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" type="submit"><i class="bi bi-trash-fill"></i></button>
+                                    <button class="btn btn-sm btn-danger" type="submit" aria-label="Hapus menu {{ $menu->nama }}" title="Hapus menu"><i class="bi bi-trash-fill"></i></button>
                                 </form>
                         </div>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">Belum ada data menu.</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
-                    <td class="text-center">-</td>
+                    <td class="text-center app-empty-state" colspan="7">
+                        <div class="d-flex flex-column align-items-center gap-1">
+                            <i class="bi bi-inbox icon"></i>
+                            <div class="fw-bold">Belum ada data menu</div>
+                            <div class="small text-muted">Tambahkan menu baru dari form di atas.</div>
+                        </div>
+                    </td>
                 </tr>
             @endforelse
             </tbody>

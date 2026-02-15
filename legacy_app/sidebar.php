@@ -1,4 +1,4 @@
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="home">
         <div class="sidebar-brand-icon">
@@ -12,6 +12,12 @@
     <li class="nav-item active">
         <a class="nav-link" href="home">
             <i class="fas fa-fw fa-home"></i> <span>Home</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="/app/home">
+            <i class="fas fa-fw fa-arrow-left"></i> <span>Kembali ke App Baru</span>
         </a>
     </li>
 

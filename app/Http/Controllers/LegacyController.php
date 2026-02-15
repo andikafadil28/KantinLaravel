@@ -10,6 +10,25 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LegacyController extends Controller
 {
+    private const LEGACY_SESSION_NAME = 'LEGACYSESSID';
+    private const LEGACY_MIME_MAP = [
+        'css' => 'text/css; charset=UTF-8',
+        'js' => 'application/javascript; charset=UTF-8',
+        'map' => 'application/json; charset=UTF-8',
+        'svg' => 'image/svg+xml',
+        'png' => 'image/png',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'gif' => 'image/gif',
+        'webp' => 'image/webp',
+        'ico' => 'image/x-icon',
+        'pdf' => 'application/pdf',
+        'woff' => 'font/woff',
+        'woff2' => 'font/woff2',
+        'ttf' => 'font/ttf',
+        'eot' => 'application/vnd.ms-fontobject',
+        'txt' => 'text/plain; charset=UTF-8',
+    ];
     private const ALLOWED_X = [
         'home',
         'menu',
@@ -27,6 +46,24 @@ class LegacyController extends Controller
         'rekapkeuanganmenu',
         'login',
         'logout',
+    ];
+    private const ALLOWED_LEGACY_PUBLIC_EXTENSIONS = [
+        'css',
+        'js',
+        'map',
+        'png',
+        'jpg',
+        'jpeg',
+        'gif',
+        'svg',
+        'webp',
+        'ico',
+        'pdf',
+        'woff',
+        'woff2',
+        'ttf',
+        'eot',
+        'txt',
     ];
 
     public function root(Request $request): Response|RedirectResponse
@@ -107,7 +144,7 @@ class LegacyController extends Controller
         return $this->renderLegacyIndex($x, $request);
     }
 
-    private function renderLegacyIndex(string $x, Request $request): Response
+    private function renderLegacyIndex(string $x, Request $request): Response|RedirectResponse
     {
         $legacyDir = $this->legacyRoot();
         $legacyIndex = $legacyDir . DIRECTORY_SEPARATOR . 'index.php';
@@ -128,6 +165,10 @@ class LegacyController extends Controller
             abort(404);
         }
 
+        if (!$this->isAllowedLegacyPath($path)) {
+            abort(404);
+        }
+
         $fullPath = $this->legacyRoot() . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
         if (!is_file($fullPath)) {
             abort(404);
@@ -138,14 +179,47 @@ class LegacyController extends Controller
             return $this->executePhpScript($request, $fullPath);
         }
 
-        return response()->file($fullPath);
+        $headers = [];
+        if (isset(self::LEGACY_MIME_MAP[$extension])) {
+            $headers['Content-Type'] = self::LEGACY_MIME_MAP[$extension];
+        }
+
+        return response()->file($fullPath, $headers);
     }
 
-    private function executePhpScript(Request $request, string $scriptPath, ?array $getOverride = null): Response
+    private function isAllowedLegacyPath(string $path): bool
+    {
+        $cleanPath = ltrim($path, '/');
+        $segments = array_filter(explode('/', $cleanPath), static fn (string $segment): bool => $segment !== '');
+        foreach ($segments as $segment) {
+            if (str_starts_with($segment, '.')) {
+                return false;
+            }
+        }
+
+        $extension = strtolower(pathinfo($cleanPath, PATHINFO_EXTENSION));
+        if ($extension === 'php') {
+            return $this->isAllowedLegacyPhpPath($cleanPath);
+        }
+
+        return in_array($extension, self::ALLOWED_LEGACY_PUBLIC_EXTENSIONS, true);
+    }
+
+    private function isAllowedLegacyPhpPath(string $path): bool
+    {
+        if ($path === 'index.php') {
+            return true;
+        }
+
+        return preg_match('#^(validate|proses|excel_export|inc/modal)/[a-zA-Z0-9._/-]+\.php$#', $path) === 1;
+    }
+
+    private function executePhpScript(Request $request, string $scriptPath, ?array $getOverride = null): Response|RedirectResponse
     {
         $scriptDir = dirname($scriptPath);
         $legacyRoot = $this->legacyRoot();
         $previousCwd = getcwd();
+        $hadActiveSession = session_status() === PHP_SESSION_ACTIVE;
         $previousGet = $_GET ?? [];
         $previousPost = $_POST ?? [];
         $previousRequest = $_REQUEST ?? [];
@@ -162,6 +236,11 @@ class LegacyController extends Controller
         if (!isset($_SERVER['DOCUMENT_ROOT'])) {
             $_SERVER['DOCUMENT_ROOT'] = public_path();
         }
+
+        if ($hadActiveSession) {
+            session_write_close();
+        }
+        $this->prepareLegacySessionContext();
 
         chdir($scriptDir);
 
@@ -261,15 +340,28 @@ class LegacyController extends Controller
     private function ensureLegacySession(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
-            $savePath = session_save_path();
-            if ($savePath === '' || !is_dir($savePath) || !is_writable($savePath)) {
-                $fallbackPath = storage_path('framework/legacy-sessions');
-                if (!is_dir($fallbackPath)) {
-                    mkdir($fallbackPath, 0775, true);
-                }
-                session_save_path($fallbackPath);
-            }
+            $this->prepareLegacySessionContext();
             session_start();
+        }
+    }
+
+    private function prepareLegacySessionContext(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            return;
+        }
+
+        if (session_name() !== self::LEGACY_SESSION_NAME) {
+            session_name(self::LEGACY_SESSION_NAME);
+        }
+
+        $savePath = session_save_path();
+        if ($savePath === '' || !is_dir($savePath) || !is_writable($savePath)) {
+            $fallbackPath = storage_path('framework/legacy-sessions');
+            if (!is_dir($fallbackPath)) {
+                mkdir($fallbackPath, 0775, true);
+            }
+            session_save_path($fallbackPath);
         }
     }
 }

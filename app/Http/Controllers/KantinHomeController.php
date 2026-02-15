@@ -14,11 +14,50 @@ class KantinHomeController extends Controller
     {
         $userId = (int) $request->session()->get('kantin_user_id');
         $user = KantinUser::query()->find($userId);
+        $level = (int) $request->session()->get('level_kantin', 0);
+        $sessionKios = (string) $request->session()->get('nama_toko_kantin', '');
+        $today = now()->toDateString();
+        $yesterday = now()->subDay()->toDateString();
 
         $openOrders = KantinOrder::query()
             ->where('kasir', $userId)
-            ->whereDate('waktu_order', now()->toDateString())
+            ->whereDate('waktu_order', $today)
             ->count();
+
+        $todayOrderScope = DB::table('tb_order')
+            ->when($level === 3 && $sessionKios !== '', fn ($q) => $q->where('tb_order.nama_kios', $sessionKios));
+
+        $todayOrderCount = (clone $todayOrderScope)
+            ->whereDate('tb_order.waktu_order', $today)
+            ->count();
+
+        $todayRevenue = (float) ((clone $todayOrderScope)
+            ->leftJoin('tb_bayar', 'tb_bayar.id_bayar', '=', 'tb_order.id_order')
+            ->whereDate('tb_order.waktu_order', $today)
+            ->sum('tb_bayar.jumlah_bayar'));
+
+        $yesterdayRevenue = (float) (DB::table('tb_order')
+            ->when($level === 3 && $sessionKios !== '', fn ($q) => $q->where('tb_order.nama_kios', $sessionKios))
+            ->leftJoin('tb_bayar', 'tb_bayar.id_bayar', '=', 'tb_order.id_order')
+            ->whereDate('tb_order.waktu_order', $yesterday)
+            ->sum('tb_bayar.jumlah_bayar'));
+
+        $trendDiff = $todayRevenue - $yesterdayRevenue;
+        $trendPercent = $yesterdayRevenue > 0
+            ? round(($trendDiff / $yesterdayRevenue) * 100, 1)
+            : null;
+        $trendDirection = $trendDiff > 0 ? 'up' : ($trendDiff < 0 ? 'down' : 'flat');
+
+        $topKiosToday = DB::table('tb_order')
+            ->leftJoin('tb_bayar', 'tb_bayar.id_bayar', '=', 'tb_order.id_order')
+            ->selectRaw('tb_order.nama_kios, COUNT(tb_order.id_order) as total_order, COALESCE(SUM(tb_bayar.jumlah_bayar), 0) as total_omzet')
+            ->whereDate('tb_order.waktu_order', $today)
+            ->when($level === 3 && $sessionKios !== '', fn ($q) => $q->where('tb_order.nama_kios', $sessionKios))
+            ->groupBy('tb_order.nama_kios')
+            ->orderByDesc('total_order')
+            ->orderByDesc('total_omzet')
+            ->limit(3)
+            ->get();
 
         $dailyRows = DB::table('tb_order')
             ->leftJoin('tb_list_order', 'tb_list_order.kode_order', '=', 'tb_order.id_order')
@@ -45,6 +84,13 @@ class KantinHomeController extends Controller
         return view('app.home', [
             'user' => $user,
             'openOrders' => $openOrders,
+            'todayOrderCount' => (int) $todayOrderCount,
+            'todayRevenue' => (float) $todayRevenue,
+            'yesterdayRevenue' => (float) $yesterdayRevenue,
+            'trendDiff' => (float) $trendDiff,
+            'trendPercent' => $trendPercent,
+            'trendDirection' => $trendDirection,
+            'topKiosToday' => $topKiosToday,
             'dailyMenuLabels' => $dailyRows->pluck('nama_menu')->values(),
             'dailyMenuTotals' => $dailyRows->pluck('total_terjual')->map(fn ($v) => (int) $v)->values(),
             'weeklyMenuLabels' => $weeklyRows->pluck('nama_menu')->values(),

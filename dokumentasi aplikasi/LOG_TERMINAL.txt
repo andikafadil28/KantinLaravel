@@ -1,0 +1,124 @@
+[LOG TERMINAL]
+File ini akan terisi otomatis setelah logging diaktifkan.
+
+Cara pakai:
+1. Jalankan: .\scripts\terminal-log.ps1 -Action start
+2. Jalankan perintah terminal seperti biasa.
+3. Hentikan logging: .\scripts\terminal-log.ps1 -Action stop
+
+Catatan:
+- Isi file ini otomatis bertambah setiap ada command baru selama transcript aktif.
+- Format konten mengikuti format bawaan PowerShell transcript.
+**********************
+Windows PowerShell transcript start
+Start time: 20260215141721
+Username: MAS-IT\CodexSandboxOffline
+RunAs User: MAS-IT\CodexSandboxOffline
+Configuration Name: 
+Machine: MAS-IT (Microsoft Windows NT 10.0.22631.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -Command [Console]::OutputEncoding=[System.Text.Encoding]::UTF8;
+.\scripts\terminal-log.ps1 -Action start
+Process ID: 2860
+PSVersion: 5.1.22621.6133
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.6133
+BuildVersion: 10.0.22621.6133
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Terminal logging aktif. File: dokumentasi aplikasi/LOG_TERMINAL.txt
+Jalankan: .\\scripts\\terminal-log.ps1 -Action stop  untuk menghentikan logging.
+PS>$global:?
+True
+**********************
+Windows PowerShell transcript end
+End time: 20260215141721
+**********************
+**********************
+Windows PowerShell transcript start
+Start time: 20260215143009
+Username: MAS-IT\CodexSandboxOffline
+RunAs User: MAS-IT\CodexSandboxOffline
+Configuration Name: 
+Machine: MAS-IT (Microsoft Windows NT 10.0.22631.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -Command [Console]::OutputEncoding=[System.Text.Encoding]::UTF8;
+.\scripts\terminal-log.ps1 -Action start
+Process ID: 3684
+PSVersion: 5.1.22621.6133
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.6133
+BuildVersion: 10.0.22621.6133
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Terminal logging aktif. File: dokumentasi aplikasi/LOG_TERMINAL.txt
+Perintah stop  : .\\scripts\\terminal-log.ps1 -Action stop
+Perintah watch : .\\scripts\\terminal-log.ps1 -Action watch
+PS>$global:?
+True
+**********************
+Windows PowerShell transcript end
+End time: 20260215143009
+**********************
+**********************
+Windows PowerShell transcript start
+Start time: 20260215143054
+Username: MAS-IT\POLI-JANTUNG-LUAR
+RunAs User: MAS-IT\POLI-JANTUNG-LUAR
+Configuration Name: 
+Machine: MAS-IT (Microsoft Windows NT 10.0.22631.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\POLI-JANTUNG-LUAR\AppData\Local\Programs\Microsoft VS Code\b6a47e94e3\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 8756
+PSVersion: 5.1.22621.6133
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.6133
+BuildVersion: 10.0.22621.6133
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Terminal logging aktif. File: dokumentasi aplikasi/LOG_TERMINAL.txt
+Perintah stop  : .\\scripts\\terminal-log.ps1 -Action stop
+Perintah watch : .\\scripts\\terminal-log.ps1 -Action watch
+]633;D;0]633;A]633;P;Cwd=C:\x5claragon\x5cwww\x5cKantinApp_DevPS C:\laragon\www\KantinApp_Dev> ]633;B
+PS>.\scripts\terminal-log.ps1 -action start
+Terminal logging aktif. File: dokumentasi aplikasi/LOG_TERMINAL.txt
+Perintah stop  : .\\scripts\\terminal-log.ps1 -Action stop
+Perintah watch : .\\scripts\\terminal-log.ps1 -Action watch
+]633;D;0]633;A]633;P;Cwd=C:\x5claragon\x5cwww\x5cKantinApp_DevPS C:\laragon\www\KantinApp_Dev> ]633;B
+PS>codex
+[2026-02-15 14:32:41] [CODEX] Codex logger aktif: mode append dan run siap dipakai.
+[2026-02-15 14:33:22] [CODEX-CMD] git status --short
+[2026-02-15 14:33:22] [CODEX-OUT-BEGIN]
+[2026-02-15 14:33:22] [CODEX-OUT-END] exit_code=0 success=True
+[2026-02-15 14:34:39] [CODEX] Ringkasan upgrade KantinApp_Dev: security route/auth, Laravel Auth+Policy, DB transaction pembayaran, decimal untuk uang, index+constraint DB, rapikan HTTP method, kurangi legacy_app, tambah test coverage, dan repo hygiene.
+[2026-02-15 14:35:13] [CODEX] Mode auto-log respons Codex diaktifkan: setiap balasan akan di-append ke LOG_TERMINAL.txt.
+[2026-02-15 14:35:42] [CODEX] Ringkasan upgrade KantinApp_Dev (ulang): 1) keamanan route legacy/auth, 2) standardisasi Laravel Auth + Gate/Policy, 3) DB transaction pada pembayaran, 4) ubah kolom uang dari double ke decimal, 5) tambah index/constraint DB, 6) rapikan HTTP method ke PUT/PATCH, 7) migrasi bertahap legacy_app ke native, 8) tambah test coverage fitur kritikal, 9) repo hygiene (ignore legacy sessions dan bersihkan file duplikat).
+[2026-02-15 14:37:23] [CODEX] Update security tahap 1 selesai: GET /logout diubah jadi redirect aman ke /app/login; route /legacy dibatasi ke GET+POST; LegacyController sekarang blok file sensitif dan batasi direct PHP hanya untuk path yang diizinkan (validate/proses/excel_export/inc/modal/index.php); test security ditambah dan php artisan test PASS (7 test, 13 assertions).
+[2026-02-15 14:40:56] [CODEX] Fix legacy login error: ditambahkan migration sessions table (2026_02_15_143600_create_sessions_table.php), migrate sukses, dan test suite PASS (7 tests, 13 assertions). Akar masalah: SESSION_DRIVER=database tetapi tabel sessions belum ada.
+[2026-02-15 14:44:19] [CODEX] Fix endpoint legacy login selesai: POST /legacy/validate/validate_login.php tidak lagi 419/500. Perubahan: CSRF exception untuk legacy validate/proses/export/modal, LegacyController menutup session aktif sebelum include script legacy, dan validate_login.php diperbaiki (session guard + aman saat username tidak ditemukan + escape username). Verifikasi: LegacyBridgeTest PASS dan POST endpoint return 200.
+[2026-02-15 14:47:37] [CODEX] Fix kompatibilitas legacy PHP session selesai: gunakan nama session legacy terpisah (LEGACYSESSID) di LegacyController, tambah except encrypt cookie untuk PHPSESSID/LEGACYSESSID, dan legacy login tetap aman walau ada cookie PHPSESSID invalid. Verifikasi: LegacyBridgeTest PASS (7 test) dan simulasi POST /legacy/validate/validate_login.php dengan PHPSESSID invalid return 200.
+[2026-02-15 14:48:58] [CODEX] Fix type error LegacyController: return type executePhpScript dan renderLegacyIndex diubah ke Response|RedirectResponse agar cocok saat legacy script mengirim header Location. Verifikasi: legacy tests dan full tests PASS (9 passed, 15 assertions).
+[2026-02-15 14:51:07] [CODEX] Perbaikan tampilan SB Admin legacy: hapus include head.php ganda di main.php, hilangkan class sidebar default toggled, dan hapus aset Bootstrap 5 yang bentrok di head/footer legacy agar stack kembali ke SB Admin (Bootstrap 4). Verifikasi: /legacy/login status 200 dan LegacyBridgeTest PASS.
+[2026-02-15 14:53:15] [CODEX] Fix tampilan legacy text-only: LegacyController sekarang set MIME type asset legacy secara eksplisit (css/js/font/image), sehingga browser tidak memblokir stylesheet/script karena text/plain. Login legacy juga dirapikan (hapus include head/footer ganda). Verifikasi: /legacy/css -> text/css, /legacy/vendor/bootstrap/js -> application/javascript, LegacyBridgeTest PASS.
+[2026-02-15 14:57:17] [CODEX] Fix DataTable legacy: urutan asset distabilkan (Select2/DataTables JS dipindah ke footer setelah jQuery), pakai DataTables Bootstrap4 lokal, tambah fallback helper DataTable global, dan init table order diperkuat + pageLength 10 agar tidak memanjang full data. Verifikasi: asset datatables local /legacy/vendor/datatables/* status 200 dan LegacyBridgeTest PASS.
+[2026-02-15 14:59:04] [CODEX] Update sidebar legacy: ditambahkan tombol 'Kembali ke App Baru' di legacy_app/sidebar.php yang mengarah ke /app/home.
+[2026-02-15 15:11:35] [CODEX] Saran upgrade UI app baru: prioritas sticky toolbar/filter di halaman tabel, ringkas kolom aksi table order, tambah status chips dan row hover state konsisten, pisahkan CSS inline blade ke file terstruktur, tambah loading/empty states, serta toast feedback non-intrusif untuk aksi CRUD/pay.
+[2026-02-15 15:13:42] [CODEX] UI quick win app baru dieksekusi: (1) alert feedback diganti toast global di layout utama, (2) toolbar filter di halaman order dibuat sticky, (3) kolom aksi order diringkas dan form bayar cepat dijadikan collapse per-row. Verifikasi: php artisan test PASS (9 passed, 15 assertions).
+[2026-02-15 15:16:55] [CODEX] UI tahap 2 selesai: sidebar hover desktop distabilkan dengan class sidebar-hover-open (anti glitch), loading state otomatis untuk tombol submit form ditambahkan, dan empty-state tabel order dirapikan (pesan + ikon + panduan). Verifikasi: php artisan test PASS (9 passed, 15 assertions).
+[2026-02-15 15:18:26] [CODEX] Perbaikan sidebar hover lanjutan: desktop tidak lagi toggle class body sidebar-toggled (hindari konflik style SB Admin), hover-open dipertahankan hanya via class sidebar-hover-open, dan interaksi collapse menu di mini mode dijaga tetap terbuka saat diklik.
+[2026-02-15 15:19:32] [CODEX] Fix sidebar hover width: di desktop class 'toggled' pada elemen sidebar dihapus dari logic applyDesktopSidebarState, sehingga saat hover-open lebar sidebar ikut expand (bukan hanya text label).
+[2026-02-15 15:22:07] [CODEX] Refine sidebar mini-hover: label/menu-title state diubah ke display+visibility+max-width (bukan width auto/0), sehingga saat hover kontainer dan isi sidebar terbuka konsisten; ditambah display inline-block default untuk label.
+[2026-02-15 15:23:37] [CODEX] Update sidebar desktop sesuai request: tombol hide/unhide dihapus, mode desktop dipaksa sidebar-mini default, dan expand sidebar sekarang murni via hover (class sidebar-hover-open).
+[2026-02-15 15:25:32] [CODEX] Fix final sidebar hover: desktop mini sekarang dipaksa via CSS (tidak bergantung class sidebar-mini), hover-open tetap lewat class sidebar-hover-open. Ini memastikan sidebar default selalu minimize dan hanya expand saat hover.
+[2026-02-15 15:27:19] [CODEX] Hotfix sidebar width: desktop width mini/hover sekarang dipaksa dengan !important + flex-basis agar tidak ketimpa style SB Admin. Default mini = --sidebar-mini-width, hover = --sidebar-width.
+[2026-02-15 15:30:12] [CODEX] UI consistency lanjut selesai: modul menu/users/kios/reports kini pakai empty-state tabel seragam (ikon + pesan + panduan), report orders status badge diseragamkan ke app-badge, dan seluruh halaman tetap lolos test (9 passed, 15 assertions).
+[2026-02-15 15:33:10] [CODEX] UI consistency tahap lanjutan: modul menu/users/kios diseragamkan dengan section-card style + header gelap + form compact; report orders/rs/toko kini punya sticky filter toolbar dan section-card konsisten; test suite tetap PASS (9 passed).
+[2026-02-15 15:34:46] [CODEX] Lanjutan UI selesai: ditambahkan focus-visible global untuk aksesibilitas, overlay loading saat submit filter report (orders/rs/toko), serta aria-label+title pada tombol ikon aksi di menu/users/kios. Verifikasi: php artisan test PASS (9 passed, 15 assertions).
+[2026-02-15 15:36:51] [CODEX] UI dashboard home di-upgrade: tambah insight omzet hari ini, tren vs kemarin, dan top kios hari ini. Verifikasi: php artisan test PASS (9 tests, 15 assertions).
+[2026-02-15 15:38:44] [CODEX] Lanjutan UI dashboard: chart home kini pakai loading skeleton, tooltip diperjelas (nama menu + total porsi), dan render transisi lebih halus. Verifikasi: php artisan test PASS (9 tests, 15 assertions).

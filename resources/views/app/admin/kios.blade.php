@@ -11,13 +11,38 @@
 </nav>
 @endsection
 
+@push('styles')
+<style>
+    .admin-page-section {
+        border: 1px solid #e3e6f0;
+        border-radius: .7rem;
+        overflow: hidden;
+    }
+
+    .admin-page-section .card-header {
+        background: #111827;
+        color: #fff;
+        border-bottom: 0;
+    }
+
+    .app-empty-state {
+        padding: 1rem 0 !important;
+    }
+
+    .app-empty-state .icon {
+        font-size: 1.55rem;
+        color: #94a3b8;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="card shadow-lg border-0 mb-3">
-    <div class="card-header bg-dark text-white fw-bold">
+<div class="card admin-page-section shadow-lg border-0 mb-3">
+    <div class="card-header fw-bold">
         <i class="bi bi-building me-2"></i>Manajemen Toko
     </div>
     <div class="card-body">
-        <form method="post" action="{{ route('app.kios.store') }}" class="row g-2">
+        <form method="post" action="{{ route('app.kios.store') }}" class="row g-2 legacy-form-compact">
             @csrf
             <div class="col-md-6"><input class="form-control" name="nama" placeholder="Nama toko" required></div>
             <div class="col-auto"><button class="btn btn-primary" type="submit"><i class="bi bi-plus-circle me-1"></i>Simpan</button></div>
@@ -25,29 +50,40 @@
     </div>
 </div>
 
-<div class="card shadow-lg border-0">
+<div class="card admin-page-section shadow-lg border-0">
+    <div class="card-header fw-bold"><i class="bi bi-shop-window me-2"></i>Daftar Toko</div>
     <div class="card-body table-responsive">
         <table class="table table-striped table-hover table-bordered caption-top align-middle js-datatable">
             <caption class="fw-bold">Daftar Toko</caption>
             <thead><tr class="table-head-soft"><th>ID</th><th>Nama</th><th style="min-width:300px;">Aksi</th></tr></thead>
             <tbody>
-            @foreach($kios as $k)
+            @forelse($kios as $k)
                 <tr>
                     <td>{{ $k->id }}</td>
                     <td>{{ $k->nama }}</td>
                     <td>
                         <div class="table-actions">
-                            <button class="btn btn-sm btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#editKiosModal{{ $k->id }}">
+                            <button class="btn btn-sm btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#editKiosModal{{ $k->id }}" aria-label="Edit toko {{ $k->nama }}" title="Edit toko">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
                             <form method="post" action="{{ route('app.kios.destroy', $k->id) }}" onsubmit="return confirm('Hapus kios ini?')">
                                 @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-danger" type="submit"><i class="bi bi-trash-fill"></i></button>
+                                <button class="btn btn-sm btn-danger" type="submit" aria-label="Hapus toko {{ $k->nama }}" title="Hapus toko"><i class="bi bi-trash-fill"></i></button>
                             </form>
                         </div>
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td class="text-center app-empty-state" colspan="3">
+                        <div class="d-flex flex-column align-items-center gap-1">
+                            <i class="bi bi-inbox icon"></i>
+                            <div class="fw-bold">Belum ada data toko</div>
+                            <div class="small text-muted">Tambahkan toko baru dari form di atas.</div>
+                        </div>
+                    </td>
+                </tr>
+            @endforelse
             </tbody>
         </table>
     </div>

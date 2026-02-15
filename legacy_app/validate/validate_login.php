@@ -1,17 +1,20 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+      session_start();
+}
 
 include("../Database/connect.php");
-$username = (isset($_POST["username"])) ? htmlentities($_POST["username"]) : "";
+$username = (isset($_POST["username"])) ? trim((string) $_POST["username"]) : "";
 $password = (isset($_POST["password"])) ? htmlentities($_POST["password"]) : "";
 
 
 //md5(htmlentities($_POST["password"])) : "";
 if (!empty($_POST['submit_validate'])) {
-      $query = mysqli_query($conn, "select * from user where username = '$username'");
+      $usernameEscaped = mysqli_real_escape_string($conn, $username);
+      $query = mysqli_query($conn, "select * from user where username = '$usernameEscaped'");
       $hasil = mysqli_fetch_array($query);
 
-      if (password_verify($password, $hasil['password'])) {
+      if ($hasil && isset($hasil['password']) && password_verify($password, (string) $hasil['password'])) {
             $_SESSION['username_kantin'] = $username;
             $_SESSION['level_kantin'] = $hasil['level'];
             $_SESSION['id_kantin'] = $hasil['id'];

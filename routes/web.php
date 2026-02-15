@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', fn () => redirect('/app/login'));
 Route::redirect('/home', '/app/home');
 Route::redirect('/login', '/app/login');
-Route::get('/logout', [KantinAuthController::class, 'logout']);
+Route::redirect('/logout', '/app/login');
 Route::redirect('/menu', '/app/menu');
 Route::redirect('/order', '/app/orders');
 Route::redirect('/user', '/app/users');
@@ -49,6 +49,7 @@ Route::middleware('kantin.auth')->group(function (): void {
     Route::post('/app/orders/{id}', [KantinOrderController::class, 'update'])->name('app.orders.update');
     Route::delete('/app/orders/{id}', [KantinOrderController::class, 'destroy'])->name('app.orders.destroy');
     Route::get('/app/orders/{id}', [KantinOrderController::class, 'show'])->name('app.orders.show');
+    Route::get('/app/orders/{id}/receipt', [KantinOrderController::class, 'receipt'])->name('app.orders.receipt');
     Route::post('/app/orders/{id}/items', [KantinOrderController::class, 'addItem'])->name('app.orders.items.store');
     Route::post('/app/orders/{id}/items/{itemId}', [KantinOrderController::class, 'updateItem'])->name('app.orders.items.update');
     Route::delete('/app/orders/{id}/items/{itemId}', [KantinOrderController::class, 'deleteItem'])->name('app.orders.items.destroy');
@@ -82,5 +83,5 @@ Route::middleware('kantin.auth')->group(function (): void {
     Route::delete('/app/kios/{id}', [KantinAdminController::class, 'deleteKios'])->name('app.kios.destroy');
 });
 
-Route::any('/legacy/{path?}', [LegacyController::class, 'legacyPath'])->where('path', '.*');
+Route::match(['GET', 'POST'], '/legacy/{path?}', [LegacyController::class, 'legacyPath'])->where('path', '.*');
 Route::get('/{x}', [LegacyController::class, 'page'])->where('x', '(home|menu|order|orderitem|user|kios|laporan|history|laporanrs|laporantoko|rekapmenurs|rekaprs|rekapkeuangan|rekapkeuanganmenu|login|logout)');

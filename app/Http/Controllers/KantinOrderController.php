@@ -104,29 +104,11 @@ class KantinOrderController extends Controller
         $isPaid = $order->pembayaran !== null;
         $canModify = $canEditPaid || !$isPaid;
 
-        $rows = $order->items->map(function (KantinListOrder $item): array {
-            $menu = $item->menuRel;
-            $harga = (float) ($menu?->harga ?? 0);
-            $pajak = (float) ($menu?->pajak ?? 0);
-            $qty = (int) $item->jumlah;
-            $hargaJual = ($harga + $pajak) * 1.11;
-            $subtotal = $hargaJual * $qty;
-            $ppn = (($harga + $pajak) * 0.11) * $qty;
-            $hargaToko = $harga * $qty;
-
-            return [
-                'item' => $item,
-                'menu' => $menu,
-                'harga_jual' => $hargaJual,
-                'subtotal' => $subtotal,
-                'ppn' => $ppn,
-                'harga_toko' => $hargaToko,
-            ];
-        });
-
-        $total = (float) round($rows->sum('subtotal'), 0);
-        $totalPpn = (float) round($rows->sum('ppn'), 0);
-        $totalToko = (float) round($rows->sum('harga_toko'), 0);
+        $summary = $this->buildOrderSummary($order);
+        $rows = $summary['rows'];
+        $total = $summary['total'];
+        $totalPpn = $summary['totalPpn'];
+        $totalToko = $summary['totalToko'];
         $diskonExisting = (float) round($order->pembayaran?->diskon ?? 0, 0);
         $grandTotal = max(0, (float) ceil($total - $diskonExisting));
 
@@ -141,6 +123,34 @@ class KantinOrderController extends Controller
             'grandTotal' => $grandTotal,
             'isPaid' => $isPaid,
             'canModify' => $canModify,
+        ]);
+    }
+
+    public function receipt(Request $request, int $id): View
+    {
+        $order = KantinOrder::query()
+            ->with(['items.menuRel', 'pembayaran', 'kasirUser'])
+            ->findOrFail($id);
+
+        $summary = $this->buildOrderSummary($order);
+        $rows = $summary['rows'];
+        $total = $summary['total'];
+        $totalPpn = $summary['totalPpn'];
+        $diskon = (float) round($order->pembayaran?->diskon ?? 0, 0);
+        $grandTotal = max(0, (float) ceil($total - $diskon));
+        $bayar = (float) round($order->pembayaran?->nominal_uang ?? 0, 0);
+        $kembalian = max(0, (float) round($bayar - $grandTotal, 0));
+
+        return view('app.order.receipt', [
+            'order' => $order,
+            'rows' => $rows,
+            'total' => $total,
+            'totalPpn' => $totalPpn,
+            'diskon' => $diskon,
+            'grandTotal' => $grandTotal,
+            'bayar' => $bayar,
+            'kembalian' => $kembalian,
+            'autoPrint' => $request->boolean('autoprint'),
         ]);
     }
 
@@ -306,5 +316,35 @@ class KantinOrderController extends Controller
         }
 
         return (float) $normalized;
+    }
+
+    private function buildOrderSummary(KantinOrder $order): array
+    {
+        $rows = $order->items->map(function (KantinListOrder $item): array {
+            $menu = $item->menuRel;
+            $harga = (float) ($menu?->harga ?? 0);
+            $pajak = (float) ($menu?->pajak ?? 0);
+            $qty = (int) $item->jumlah;
+            $hargaJual = ($harga + $pajak) * 1.11;
+            $subtotal = $hargaJual * $qty;
+            $ppn = (($harga + $pajak) * 0.11) * $qty;
+            $hargaToko = $harga * $qty;
+
+            return [
+                'item' => $item,
+                'menu' => $menu,
+                'harga_jual' => $hargaJual,
+                'subtotal' => $subtotal,
+                'ppn' => $ppn,
+                'harga_toko' => $hargaToko,
+            ];
+        });
+
+        return [
+            'rows' => $rows,
+            'total' => (float) round($rows->sum('subtotal'), 0),
+            'totalPpn' => (float) round($rows->sum('ppn'), 0),
+            'totalToko' => (float) round($rows->sum('harga_toko'), 0),
+        ];
     }
 }

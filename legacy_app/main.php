@@ -26,7 +26,6 @@ $hasil = mysqli_fetch_array($query);
                   <div id="content">
 
                         <!-- Topbar -->
-                        <?php include 'head.php'; ?>
                         <?php include 'navbar.php'; ?>
                         <!-- End of Topbar -->
                         <div class="row mb-5">

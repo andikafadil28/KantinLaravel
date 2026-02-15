@@ -114,6 +114,78 @@
         color: #633217;
     }
 
+    .insight-card {
+        border: 0;
+        border-radius: .75rem;
+        box-shadow: 0 .2rem .9rem rgba(31, 41, 55, .07);
+        height: 100%;
+    }
+
+    .insight-card .label {
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-weight: 800;
+        color: #6b7280;
+        margin-bottom: .2rem;
+    }
+
+    .insight-card .amount {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #1f2937;
+        line-height: 1.15;
+    }
+
+    .trend-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        border-radius: 999px;
+        padding: .2rem .55rem;
+        font-size: .75rem;
+        font-weight: 700;
+    }
+
+    .trend-chip.up {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .trend-chip.down {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .trend-chip.flat {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .kios-rank-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .75rem;
+        padding: .45rem 0;
+        border-bottom: 1px dashed #e5e7eb;
+    }
+
+    .kios-rank-item:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .kios-rank-name {
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .kios-rank-meta {
+        font-size: .78rem;
+        color: #6b7280;
+    }
+
     .home-chart-card {
         border-radius: .75rem;
         overflow: hidden;
@@ -126,6 +198,20 @@
     .chart-wrap {
         position: relative;
         min-height: 280px;
+    }
+
+    .chart-skeleton {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(110deg, #f3f4f6 0%, #e5e7eb 45%, #f3f4f6 100%);
+        background-size: 200% 100%;
+        border-radius: .6rem;
+        animation: chartSkeletonPulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes chartSkeletonPulse {
+        0% { background-position: 0 0; }
+        100% { background-position: -200% 0; }
     }
 
     .home-feature {
@@ -230,6 +316,61 @@
     </div>
 </div>
 
+<div class="row g-3 mb-3">
+    <div class="col-xl-4">
+        <div class="card insight-card">
+            <div class="card-body">
+                <div class="label">Omzet Hari Ini</div>
+                <div class="amount">Rp {{ number_format((float) $todayRevenue, 0, ',', '.') }}</div>
+                <div class="small text-muted mt-1">Total transaksi masuk tanggal ini</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <div class="card insight-card">
+            <div class="card-body">
+                <div class="label">Tren vs Kemarin</div>
+                <div class="amount">Rp {{ number_format((float) $trendDiff, 0, ',', '.') }}</div>
+                <div class="mt-2">
+                    <span class="trend-chip {{ $trendDirection }}">
+                        @if($trendDirection === 'up')
+                            <i class="bi bi-arrow-up-right"></i>
+                        @elseif($trendDirection === 'down')
+                            <i class="bi bi-arrow-down-right"></i>
+                        @else
+                            <i class="bi bi-dash"></i>
+                        @endif
+                        @if(!is_null($trendPercent))
+                            {{ $trendPercent > 0 ? '+' : '' }}{{ $trendPercent }}%
+                        @else
+                            Belum ada pembanding
+                        @endif
+                    </span>
+                </div>
+                <div class="small text-muted mt-2">Omzet kemarin: Rp {{ number_format((float) $yesterdayRevenue, 0, ',', '.') }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <div class="card insight-card">
+            <div class="card-body">
+                <div class="label">Top Kios Hari Ini</div>
+                @forelse($topKiosToday as $kios)
+                    <div class="kios-rank-item">
+                        <div>
+                            <div class="kios-rank-name">{{ $kios->nama_kios ?: '-' }}</div>
+                            <div class="kios-rank-meta">{{ (int) $kios->total_order }} order</div>
+                        </div>
+                        <div class="fw-bold text-dark">Rp {{ number_format((float) $kios->total_omzet, 0, ',', '.') }}</div>
+                    </div>
+                @empty
+                    <div class="small text-muted">Belum ada transaksi kios hari ini.</div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card home-actions">
     <div class="card-body d-flex flex-wrap gap-2">
         <a class="btn btn-home-main" href="{{ url('/app/menu') }}">Daftar Menu</a>
@@ -252,6 +393,7 @@
             </div>
             <div class="card-body">
                 <div class="chart-wrap">
+                    <div class="chart-skeleton" data-skeleton-for="menuTerlarisChart"></div>
                     <canvas id="menuTerlarisChart"></canvas>
                 </div>
             </div>
@@ -265,6 +407,7 @@
             </div>
             <div class="card-body">
                 <div class="chart-wrap">
+                    <div class="chart-skeleton" data-skeleton-for="menuTerlarisMingguanChart"></div>
                     <canvas id="menuTerlarisMingguanChart"></canvas>
                 </div>
             </div>
@@ -312,10 +455,17 @@
         const weeklyLabels = @json($weeklyMenuLabels);
         const weeklyValues = @json($weeklyMenuTotals);
         const colors = ['#ff7a18', '#ffc107', '#4caf50', '#17a2b8', '#dc3545'];
+        const hideSkeleton = function (canvasId) {
+            const skeleton = document.querySelector('[data-skeleton-for="' + canvasId + '"]');
+            if (skeleton) {
+                skeleton.remove();
+            }
+        };
 
         function renderMenuChart(canvasId, labelsData, valuesData, emptyMessage) {
             if (!labelsData.length) {
                 const el = document.getElementById(canvasId);
+                hideSkeleton(canvasId);
                 if (el) {
                     el.outerHTML = '<div class="text-center py-4 text-muted"><i class="bi bi-graph-up fs-2 d-block mb-2"></i><span>' + emptyMessage + '</span></div>';
                 }
@@ -340,12 +490,21 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: {
+                        duration: 500,
+                        onComplete: function () {
+                            hideSkeleton(canvasId);
+                        }
+                    },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
+                                title: function (items) {
+                                    return items[0]?.label || 'Menu';
+                                },
                                 label: function (item) {
-                                    return item.raw + ' porsi';
+                                    return 'Total: ' + item.raw + ' porsi';
                                 }
                             }
                         }
@@ -353,7 +512,10 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { stepSize: 1 },
+                            ticks: {
+                                stepSize: 1,
+                                precision: 0
+                            },
                             grid: { drawBorder: false }
                         }
                     }
