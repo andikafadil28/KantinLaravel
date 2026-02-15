@@ -122,3 +122,4 @@ PS>codex
 [2026-02-15 15:34:46] [CODEX] Lanjutan UI selesai: ditambahkan focus-visible global untuk aksesibilitas, overlay loading saat submit filter report (orders/rs/toko), serta aria-label+title pada tombol ikon aksi di menu/users/kios. Verifikasi: php artisan test PASS (9 passed, 15 assertions).
 [2026-02-15 15:36:51] [CODEX] UI dashboard home di-upgrade: tambah insight omzet hari ini, tren vs kemarin, dan top kios hari ini. Verifikasi: php artisan test PASS (9 tests, 15 assertions).
 [2026-02-15 15:38:44] [CODEX] Lanjutan UI dashboard: chart home kini pakai loading skeleton, tooltip diperjelas (nama menu + total porsi), dan render transisi lebih halus. Verifikasi: php artisan test PASS (9 tests, 15 assertions).
+[2026-02-15 15:47:07] [CODEX] Percobaan push: git push origin main gagal (SEC_E_NO_CREDENTIALS). Repository lokal clean, branch main aktif, perlu login credential GitHub di mesin ini sebelum push.
