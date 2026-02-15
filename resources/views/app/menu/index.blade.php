@@ -13,6 +13,7 @@
 
 @push('styles')
 <style>
+    /* Kartu section halaman menu */
     .menu-page-section {
         border: 1px solid #e3e6f0;
         border-radius: .7rem;
@@ -37,6 +38,7 @@
 @endpush
 
 @section('content')
+{{-- Form tambah menu baru --}}
 <div class="card menu-page-section shadow-lg border-0 mb-3">
     <div class="card-header fw-bold">
         <i class="bi bi-fork-knife me-2"></i>Menu
@@ -87,6 +89,7 @@
     </div>
 </div>
 
+{{-- Tabel daftar menu + aksi edit/hapus --}}
 <div class="card menu-page-section shadow-lg border-0">
     <div class="card-header fw-bold"><i class="bi bi-list-ul me-2"></i>Daftar Menu</div>
     <div class="card-body table-responsive">
@@ -145,6 +148,7 @@
     </div>
 </div>
 
+{{-- Modal edit per baris menu --}}
 @foreach($menus as $menu)
     <div class="modal fade app-modal" id="editMenuModal{{ $menu->id }}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">

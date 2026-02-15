@@ -12,6 +12,7 @@
 @endsection
 
 @section('content')
+{{-- Toolbar filter + export rekap toko --}}
 <div class="card shadow-lg border-0 mb-3">
     <div class="card-header bg-dark text-white fw-bold">
         <i class="bi bi-fork-knife me-2"></i>Laporan Rekap Toko
@@ -41,6 +42,7 @@
     </div>
 </div>
 
+{{-- Tabel rekap toko dan grand total --}}
 <div class="card shadow-lg border-0">
     <div class="card-body table-responsive">
         <table class="table table-striped table-hover table-bordered caption-top align-middle js-datatable">

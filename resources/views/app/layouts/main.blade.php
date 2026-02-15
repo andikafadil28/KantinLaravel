@@ -14,6 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
     <style>
         :root {
+            /* Variabel utama ukuran sidebar dan warna brand */
             --sidebar-width: 260px;
             --sidebar-mini-width: 92px;
             --brand: #4e73df;
@@ -616,6 +617,7 @@
         }
 
         @media (min-width: 993px) {
+            /* Desktop: sidebar default mini, expand saat hover */
             .app-sidebar {
                 width: var(--sidebar-mini-width) !important;
                 flex: 0 0 var(--sidebar-mini-width);
@@ -678,6 +680,7 @@
         }
 
         @media (max-width: 992px) {
+            /* Mobile: sidebar mode offcanvas */
             .app-shell {
                 display: flex;
             }
@@ -912,6 +915,7 @@
             if (window.matchMedia('(min-width: 993px)').matches) {
                 // Desktop mini state is handled purely by CSS.
             } else {
+                // Pastikan state hover desktop dibersihkan saat pindah ke mobile.
                 document.body.classList.remove('sidebar-hover-open');
             }
         }
@@ -920,6 +924,7 @@
         window.addEventListener('resize', applyDesktopSidebarState);
 
         if (sidebar) {
+            // Hover desktop untuk expand sidebar.
             sidebar.addEventListener('mouseenter', function () {
                 if (!window.matchMedia('(min-width: 993px)').matches) {
                     return;
@@ -943,6 +948,7 @@
             });
 
             sidebar.addEventListener('click', function (event) {
+                // Saat klik submenu collapse, paksa sidebar tetap terbuka.
                 if (!window.matchMedia('(min-width: 993px)').matches) {
                     return;
                 }
@@ -953,6 +959,7 @@
         }
 
         if (window.matchMedia('(max-width: 992px)').matches) {
+            // Kondisi awal mobile: sidebar ditutup.
             document.body.classList.add('sidebar-collapsed', 'sidebar-toggled');
         }
 
@@ -995,6 +1002,7 @@
         });
 
         if (window.$) {
+            // Inisialisasi select2 standar untuk semua elemen bertanda .js-select2.
             $('.js-select2').select2({
                 width: '100%',
             });
@@ -1011,6 +1019,7 @@
             document.querySelectorAll('.js-datatable').forEach(function (el) {
                 const alreadyInitedByApi = typeof window.DataTable.isDataTable === 'function' && window.DataTable.isDataTable(el);
                 if (!el.dataset.dtInited && !alreadyInitedByApi) {
+                    // Konfigurasi DataTable default berbahasa Indonesia.
                     new DataTable(el, {
                         pageLength: 10,
                         language: {
@@ -1039,6 +1048,7 @@
         }
 
         if (window.bootstrap && typeof window.bootstrap.Toast === 'function') {
+            // Tampilkan toast notifikasi sukses/error dari session.
             document.querySelectorAll('.js-app-toast').forEach(function (el) {
                 window.bootstrap.Toast.getOrCreateInstance(el).show();
             });
@@ -1046,6 +1056,7 @@
 
         document.querySelectorAll('form').forEach(function (form) {
             form.addEventListener('submit', function () {
+                // Cegah double submit dengan disable tombol submit saat proses berjalan.
                 const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
                 if (!submitBtn || submitBtn.dataset.loadingBound === '1') {
                     return;
@@ -1059,6 +1070,7 @@
 
         document.querySelectorAll('.js-report-filter').forEach(function (form) {
             form.addEventListener('submit', function () {
+                // Overlay loading khusus halaman laporan.
                 const targetId = form.dataset.loadingTarget || '';
                 if (!targetId) {
                     return;

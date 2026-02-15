@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <style>
+        /* Layout halaman autentikasi (login) */
         body {
             font-family: "Nunito", sans-serif;
             min-height: 100vh;
@@ -19,6 +20,7 @@
         }
 
         .auth-card {
+            /* Kartu login utama */
             width: min(420px, 92vw);
             border: 0;
             border-radius: .9rem;
@@ -26,6 +28,7 @@
         }
 
         .auth-title {
+            /* Judul brand di halaman login */
             font-weight: 800;
             color: #4e73df;
         }

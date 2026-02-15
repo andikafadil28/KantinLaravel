@@ -10,7 +10,9 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LegacyController extends Controller
 {
+    // Gunakan nama session khusus agar tidak bentrok dengan session Laravel.
     private const LEGACY_SESSION_NAME = 'LEGACYSESSID';
+    // Mapping MIME agar asset legacy (css/js/font/gambar) terkirim dengan header benar.
     private const LEGACY_MIME_MAP = [
         'css' => 'text/css; charset=UTF-8',
         'js' => 'application/javascript; charset=UTF-8',
@@ -29,6 +31,7 @@ class LegacyController extends Controller
         'eot' => 'application/vnd.ms-fontobject',
         'txt' => 'text/plain; charset=UTF-8',
     ];
+    // Daftar halaman utama legacy yang diizinkan via parameter x.
     private const ALLOWED_X = [
         'home',
         'menu',
@@ -47,6 +50,7 @@ class LegacyController extends Controller
         'login',
         'logout',
     ];
+    // Ekstensi public yang boleh diserve langsung dari folder legacy_app.
     private const ALLOWED_LEGACY_PUBLIC_EXTENSIONS = [
         'css',
         'js',
@@ -68,6 +72,7 @@ class LegacyController extends Controller
 
     public function root(Request $request): Response|RedirectResponse
     {
+        // Kompatibilitas URL lama: /legacy?x=home -> /legacy/home
         $x = (string) $request->query('x', '');
 
         if ($x !== '') {
@@ -99,9 +104,11 @@ class LegacyController extends Controller
         }
 
         if (in_array(strtolower($path), self::ALLOWED_X, true)) {
+            // Path berupa halaman logical, dispatch ke flow legacy.
             return $this->dispatch($path, $request);
         }
 
+        // Selain halaman logical, anggap sebagai file legacy (asset/php endpoint).
         return $this->serveLegacyFile($request, $path);
     }
 
@@ -114,6 +121,7 @@ class LegacyController extends Controller
         }
 
         if ($x === 'logout') {
+            // Logout khusus sesi legacy.
             $this->ensureLegacySession();
             $_SESSION = [];
             if (ini_get('session.use_cookies')) {
@@ -138,6 +146,7 @@ class LegacyController extends Controller
         }
 
         if ($x !== 'login' && !$this->isLegacyLoggedIn()) {
+            // Lindungi halaman legacy selain login.
             return redirect('/legacy/login');
         }
 
@@ -156,11 +165,13 @@ class LegacyController extends Controller
         $query = $request->query();
         $query['x'] = $x;
 
+        // Jalankan index.php legacy dengan query override agar router lama tetap bekerja.
         return $this->executePhpScript($request, $legacyIndex, $query);
     }
 
     private function serveLegacyFile(Request $request, string $path): Response|BinaryFileResponse
     {
+        // Tolak path traversal.
         if (Str::contains($path, ['..', '\\'])) {
             abort(404);
         }
@@ -176,6 +187,7 @@ class LegacyController extends Controller
 
         $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
         if ($extension === 'php') {
+            // Endpoint PHP lama tetap dieksekusi lewat bridge.
             return $this->executePhpScript($request, $fullPath);
         }
 
@@ -189,6 +201,7 @@ class LegacyController extends Controller
 
     private function isAllowedLegacyPath(string $path): bool
     {
+        // Tolak dotfile/hidden path untuk keamanan.
         $cleanPath = ltrim($path, '/');
         $segments = array_filter(explode('/', $cleanPath), static fn (string $segment): bool => $segment !== '');
         foreach ($segments as $segment) {
@@ -199,6 +212,7 @@ class LegacyController extends Controller
 
         $extension = strtolower(pathinfo($cleanPath, PATHINFO_EXTENSION));
         if ($extension === 'php') {
+            // File php dibatasi ketat ke folder endpoint tertentu saja.
             return $this->isAllowedLegacyPhpPath($cleanPath);
         }
 
@@ -216,6 +230,7 @@ class LegacyController extends Controller
 
     private function executePhpScript(Request $request, string $scriptPath, ?array $getOverride = null): Response|RedirectResponse
     {
+        // Simpan konteks global agar bisa dipulihkan setelah include script legacy.
         $scriptDir = dirname($scriptPath);
         $legacyRoot = $this->legacyRoot();
         $previousCwd = getcwd();
@@ -238,6 +253,7 @@ class LegacyController extends Controller
         }
 
         if ($hadActiveSession) {
+            // Tutup sesi lama supaya session_name/path legacy bisa diterapkan aman.
             session_write_close();
         }
         $this->prepareLegacySessionContext();
@@ -295,6 +311,7 @@ class LegacyController extends Controller
         header_remove('Location');
 
         if ($location !== null) {
+            // Redirect dari script legacy dinormalisasi ke prefix /legacy.
             return redirect($location);
         }
 
@@ -303,6 +320,7 @@ class LegacyController extends Controller
 
     private function normalizeLegacyLocation(string $location): string
     {
+        // Normalisasi berbagai format redirect lawas ke URL bridge Laravel.
         $location = trim($location);
 
         if ($location === '') {
@@ -339,6 +357,7 @@ class LegacyController extends Controller
 
     private function ensureLegacySession(): void
     {
+        // Pastikan sesi legacy aktif sebelum akses $_SESSION.
         if (session_status() !== PHP_SESSION_ACTIVE) {
             $this->prepareLegacySessionContext();
             session_start();
@@ -347,6 +366,7 @@ class LegacyController extends Controller
 
     private function prepareLegacySessionContext(): void
     {
+        // Setup nama session + fallback save path khusus legacy.
         if (session_status() === PHP_SESSION_ACTIVE) {
             return;
         }

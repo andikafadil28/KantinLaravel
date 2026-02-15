@@ -11,6 +11,7 @@ class KantinAuthController extends Controller
 {
     public function showLogin(Request $request): View|RedirectResponse
     {
+        // Jika user sudah login, langsung arahkan ke dashboard.
         if ($request->session()->has('kantin_user_id')) {
             return redirect('/app/home');
         }
@@ -20,11 +21,13 @@ class KantinAuthController extends Controller
 
     public function login(Request $request): RedirectResponse
     {
+        // Validasi input dasar form login.
         $credentials = $request->validate([
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
 
+        // Cek user + verifikasi password hash lama (compat dengan legacy).
         $user = KantinUser::query()->where('username', $credentials['username'])->first();
         if (!$user || !password_verify($credentials['password'], $user->password)) {
             return back()->withErrors([
@@ -32,6 +35,7 @@ class KantinAuthController extends Controller
             ])->withInput();
         }
 
+        // Simpan konteks login yang dipakai lintas modul app.
         $request->session()->regenerate();
         $request->session()->put('kantin_user_id', $user->id);
         $request->session()->put('username_kantin', $user->username);
@@ -44,6 +48,7 @@ class KantinAuthController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
+        // Logout aman: invalidasi session dan token CSRF.
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

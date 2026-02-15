@@ -14,6 +14,7 @@ class KantinMenuController extends Controller
 {
     public function index(): View
     {
+        // Ambil seluruh master data untuk kebutuhan form dan tabel menu.
         return view('app.menu.index', [
             'menus' => KantinMenu::query()->orderByDesc('id')->get(),
             'kios' => KantinKios::query()->orderBy('nama')->get(),
@@ -23,6 +24,7 @@ class KantinMenuController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        // Validasi input + upload gambar menu.
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
             'keterangan' => ['required', 'string', 'max:500'],
@@ -42,6 +44,7 @@ class KantinMenuController extends Controller
     public function update(Request $request, int $id): RedirectResponse
     {
         $menu = KantinMenu::query()->findOrFail($id);
+        // Foto opsional saat update.
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
             'keterangan' => ['required', 'string', 'max:500'],
@@ -53,6 +56,7 @@ class KantinMenuController extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
+            // Hapus foto lama agar storage tidak menumpuk.
             if (!empty($menu->foto) && Storage::disk('public')->exists($menu->foto)) {
                 Storage::disk('public')->delete($menu->foto);
             }
@@ -67,6 +71,7 @@ class KantinMenuController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $menu = KantinMenu::query()->findOrFail($id);
+        // Bersihkan file foto ketika data menu dihapus.
         if (!empty($menu->foto) && Storage::disk('public')->exists($menu->foto)) {
             Storage::disk('public')->delete($menu->foto);
         }

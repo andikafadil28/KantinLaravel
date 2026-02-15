@@ -5,6 +5,7 @@
 
 @push('styles')
 <style>
+    /* Hero area dashboard */
     .home-hero {
         background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, .22), transparent 35%),
             linear-gradient(130deg, #dc7a3f 0%, #c7642e 52%, #b45324 100%);
@@ -114,6 +115,7 @@
         color: #633217;
     }
 
+    /* Kartu insight KPI (omzet, tren, top kios) */
     .insight-card {
         border: 0;
         border-radius: .75rem;
@@ -186,6 +188,7 @@
         color: #6b7280;
     }
 
+    /* Kartu grafik penjualan */
     .home-chart-card {
         border-radius: .75rem;
         overflow: hidden;
@@ -200,6 +203,7 @@
         min-height: 280px;
     }
 
+    /* Skeleton ditampilkan sebelum chart selesai render */
     .chart-skeleton {
         position: absolute;
         inset: 0;
@@ -214,6 +218,7 @@
         100% { background-position: -200% 0; }
     }
 
+    /* Kartu fitur promosi di bagian bawah */
     .home-feature {
         border: 0;
         border-radius: .75rem;
@@ -253,6 +258,7 @@
 @endpush
 
 @section('content')
+{{-- Hero utama dashboard --}}
 <div class="home-hero mb-3">
     <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
         <div>
@@ -269,6 +275,7 @@
     </div>
 </div>
 
+{{-- Statistik cepat user login --}}
 <div class="row g-3 mb-3">
     <div class="col-md-3">
         <div class="card home-stat">
@@ -316,6 +323,7 @@
     </div>
 </div>
 
+{{-- Insight bisnis harian --}}
 <div class="row g-3 mb-3">
     <div class="col-xl-4">
         <div class="card insight-card">
@@ -371,6 +379,7 @@
     </div>
 </div>
 
+{{-- Shortcut aksi utama --}}
 <div class="card home-actions">
     <div class="card-body d-flex flex-wrap gap-2">
         <a class="btn btn-home-main" href="{{ url('/app/menu') }}">Daftar Menu</a>
@@ -384,6 +393,7 @@
     </div>
 </div>
 
+{{-- Grafik menu terlaris --}}
 <div class="row g-3 mt-1">
     <div class="col-xl-6">
         <div class="card home-chart-card h-100">
@@ -415,6 +425,7 @@
     </div>
 </div>
 
+{{-- Highlight fitur aplikasi --}}
 <div class="row g-3 mt-2">
     <div class="col-md-4">
         <div class="card home-feature h-100">
@@ -450,11 +461,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Data chart dikirim dari controller (hasil agregasi database).
         const labels = @json($dailyMenuLabels);
         const values = @json($dailyMenuTotals);
         const weeklyLabels = @json($weeklyMenuLabels);
         const weeklyValues = @json($weeklyMenuTotals);
         const colors = ['#ff7a18', '#ffc107', '#4caf50', '#17a2b8', '#dc3545'];
+        // Hapus skeleton saat chart atau empty-state selesai dirender.
         const hideSkeleton = function (canvasId) {
             const skeleton = document.querySelector('[data-skeleton-for="' + canvasId + '"]');
             if (skeleton) {
@@ -462,6 +475,7 @@
             }
         };
 
+        // Helper render chart bar untuk chart harian dan mingguan.
         function renderMenuChart(canvasId, labelsData, valuesData, emptyMessage) {
             if (!labelsData.length) {
                 const el = document.getElementById(canvasId);

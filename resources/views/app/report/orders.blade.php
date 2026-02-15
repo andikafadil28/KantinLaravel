@@ -13,6 +13,7 @@
 
 @push('styles')
 <style>
+    /* Kartu section laporan */
     .report-page-section {
         border: 1px solid #e3e6f0;
         border-radius: .7rem;
@@ -26,6 +27,7 @@
     }
 
     .report-filter-toolbar {
+        /* Toolbar filter dibuat sticky agar tetap terlihat saat scroll */
         position: sticky;
         top: .3rem;
         z-index: 6;
@@ -44,6 +46,7 @@
 @endpush
 
 @section('content')
+{{-- Toolbar filter + export laporan detail --}}
 <div class="card report-page-section shadow-lg border-0 mb-3 report-filter-toolbar">
     <div class="card-header fw-bold">
         <i class="bi bi-fork-knife me-2"></i>Laporan Pendapatan Detail
@@ -73,6 +76,7 @@
     </div>
 </div>
 
+{{-- Tabel laporan + rekap total --}}
 <div class="card report-page-section shadow-lg border-0 position-relative">
     <div class="report-loading-overlay" id="ordersReportLoading" aria-hidden="true">
         <div class="d-flex align-items-center gap-2 fw-bold text-primary">

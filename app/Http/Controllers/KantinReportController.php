@@ -11,6 +11,7 @@ use Illuminate\View\View;
 
 class KantinReportController extends Controller
 {
+    // Daftar menu khusus untuk laporan rekap RS (sesuai kebutuhan bisnis lama).
     private const REKAP_RS_MENU_TARGETS = [
         'Es Teh',
         'Es Jeruk',
@@ -24,6 +25,7 @@ class KantinReportController extends Controller
 
     public function orders(Request $request): View
     {
+        // Laporan detail transaksi lengkap nominal toko + RS.
         [$start, $end, $kios] = $this->filters($request);
         $rows = $this->baseOrderQuery($start, $end, $kios)->get();
 
@@ -41,6 +43,7 @@ class KantinReportController extends Controller
 
     public function rs(Request $request): View
     {
+        // Laporan fokus pendapatan RS.
         [$start, $end, $kios] = $this->filters($request);
         $rows = $this->baseOrderQuery($start, $end, $kios)->get();
 
@@ -56,6 +59,7 @@ class KantinReportController extends Controller
 
     public function toko(Request $request): View
     {
+        // Laporan fokus pendapatan toko/kios.
         [$start, $end, $kios] = $this->filters($request);
         $rows = $this->baseOrderQuery($start, $end, $kios)->get();
 
@@ -72,6 +76,7 @@ class KantinReportController extends Controller
 
     public function menuSales(Request $request): View
     {
+        // Rekap penjualan per menu.
         [$start, $end, $kios] = $this->filters($request);
         $query = DB::table('tb_order')
             ->leftJoin('tb_list_order', 'tb_list_order.kode_order', '=', 'tb_order.id_order')
@@ -105,6 +110,7 @@ class KantinReportController extends Controller
 
     public function rekapRs(Request $request): View
     {
+        // Rekap kontribusi pajak/RS per menu.
         [$start, $end, $kios] = $this->filters($request);
         $query = DB::table('tb_order')
             ->leftJoin('tb_list_order', 'tb_list_order.kode_order', '=', 'tb_order.id_order')
@@ -129,6 +135,7 @@ class KantinReportController extends Controller
 
     public function rekapMenuRs(Request $request): View
     {
+        // Rekap RS khusus subset menu minuman tertentu.
         [$start, $end, $kios] = $this->filters($request);
         $query = DB::table('tb_order')
             ->leftJoin('tb_list_order', 'tb_list_order.kode_order', '=', 'tb_order.id_order')
@@ -154,6 +161,7 @@ class KantinReportController extends Controller
 
     public function financeDetail(Request $request): View
     {
+        // Breakdown keuangan detail per transaksi-item.
         [$start, $end, $kios] = $this->filters($request);
         $query = DB::table('tb_list_order')
             ->rightJoin('tb_order', 'tb_order.id_order', '=', 'tb_list_order.kode_order')
@@ -189,6 +197,7 @@ class KantinReportController extends Controller
 
     public function financeMenu(Request $request): View
     {
+        // Breakdown keuangan terakumulasi per menu.
         [$start, $end, $kios] = $this->filters($request);
         $query = DB::table('tb_list_order')
             ->rightJoin('tb_order', 'tb_order.id_order', '=', 'tb_list_order.kode_order')
@@ -392,6 +401,7 @@ class KantinReportController extends Controller
 
     private function filters(Request $request): array
     {
+        // Ambil filter tanggal dan kios dari query string.
         $start = (string) $request->query('start_date', '');
         $end = (string) $request->query('end_date', '');
         $kios = (string) $request->query('kios_filter', '');
@@ -401,6 +411,7 @@ class KantinReportController extends Controller
 
     private function baseOrderQuery(string $start, string $end, string $kios)
     {
+        // Query dasar laporan order agar dipakai ulang di banyak endpoint.
         $query = KantinOrder::query()
             ->leftJoin('tb_bayar', 'tb_bayar.id_bayar', '=', 'tb_order.id_order')
             ->select([
@@ -432,6 +443,7 @@ class KantinReportController extends Controller
 
     private function csvResponse(string $filename, array $header, Collection $rows)
     {
+        // Stream CSV agar hemat memory untuk data besar.
         return response()->streamDownload(function () use ($header, $rows): void {
             $out = fopen('php://output', 'w');
             fputcsv($out, $header);
@@ -446,6 +458,7 @@ class KantinReportController extends Controller
 
     private function applyOrderFilter($query, string $start, string $end, string $kios): void
     {
+        // Terapkan filter yang sama ke semua query laporan.
         if ($start) {
             $query->where('tb_order.waktu_order', '>=', $start . ' 00:00:00');
         }

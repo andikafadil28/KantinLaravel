@@ -13,6 +13,7 @@
 
 @push('styles')
 <style>
+    /* Kartu section modul admin */
     .admin-page-section {
         border: 1px solid #e3e6f0;
         border-radius: .7rem;
@@ -37,6 +38,7 @@
 @endpush
 
 @section('content')
+{{-- Form tambah toko/kios --}}
 <div class="card admin-page-section shadow-lg border-0 mb-3">
     <div class="card-header fw-bold">
         <i class="bi bi-building me-2"></i>Manajemen Toko
@@ -50,6 +52,7 @@
     </div>
 </div>
 
+{{-- Tabel kios + aksi edit/hapus --}}
 <div class="card admin-page-section shadow-lg border-0">
     <div class="card-header fw-bold"><i class="bi bi-shop-window me-2"></i>Daftar Toko</div>
     <div class="card-body table-responsive">
@@ -89,6 +92,7 @@
     </div>
 </div>
 
+{{-- Modal edit kios per baris data --}}
 @foreach($kios as $k)
     <div class="modal fade app-modal" id="editKiosModal{{ $k->id }}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

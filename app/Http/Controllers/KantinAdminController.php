@@ -12,6 +12,7 @@ class KantinAdminController extends Controller
 {
     public function users(Request $request): View
     {
+        // Modul user hanya boleh diakses level admin.
         $this->ensureAdmin($request);
 
         return view('app.admin.users', [
@@ -24,6 +25,7 @@ class KantinAdminController extends Controller
     {
         $this->ensureAdmin($request);
 
+        // Validasi data user baru.
         $data = $request->validate([
             'username' => ['required', 'string', 'max:50'],
             'password' => ['required', 'string', 'min:4'],
@@ -35,6 +37,7 @@ class KantinAdminController extends Controller
             return back()->withErrors(['user' => 'Username sudah terdaftar.']);
         }
 
+        // Password langsung disimpan dalam bentuk hash.
         KantinUser::query()->create([
             'username' => $data['username'],
             'password' => password_hash($data['password'], PASSWORD_DEFAULT),
@@ -50,6 +53,7 @@ class KantinAdminController extends Controller
         $this->ensureAdmin($request);
         $user = KantinUser::query()->findOrFail($id);
 
+        // Password bersifat opsional saat edit user.
         $data = $request->validate([
             'username' => ['required', 'string', 'max:50'],
             'password' => ['nullable', 'string', 'min:4'],
@@ -91,6 +95,7 @@ class KantinAdminController extends Controller
     public function storeKios(Request $request): RedirectResponse
     {
         $this->ensureAdmin($request);
+        // Tambah master kios baru.
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:50'],
         ]);
@@ -126,6 +131,7 @@ class KantinAdminController extends Controller
 
     private function ensureAdmin(Request $request): void
     {
+        // Level 1 = admin penuh.
         if ((int) $request->session()->get('level_kantin', 0) !== 1) {
             abort(403);
         }

@@ -13,6 +13,7 @@
 
 @push('styles')
 <style>
+    /* Kartu section modul admin */
     .admin-page-section {
         border: 1px solid #e3e6f0;
         border-radius: .7rem;
@@ -37,6 +38,7 @@
 @endpush
 
 @section('content')
+{{-- Form tambah user --}}
 <div class="card admin-page-section shadow-lg border-0 mb-3">
     <div class="card-header fw-bold">
         <i class="bi bi-people-fill me-2"></i>Manajemen User
@@ -53,6 +55,7 @@
     </div>
 </div>
 
+{{-- Tabel user + aksi edit/hapus --}}
 <div class="card admin-page-section shadow-lg border-0">
     <div class="card-header fw-bold"><i class="bi bi-person-lines-fill me-2"></i>Daftar User</div>
     <div class="card-body table-responsive">
@@ -100,6 +103,7 @@
     </div>
 </div>
 
+{{-- Modal edit user per baris data --}}
 @foreach($users as $u)
     <div class="modal fade app-modal" id="editUserModal{{ $u->id }}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

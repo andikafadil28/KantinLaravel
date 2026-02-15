@@ -12,6 +12,7 @@ class KantinHomeController extends Controller
 {
     public function index(Request $request): View
     {
+        // Ambil konteks user login dari session legacy/app.
         $userId = (int) $request->session()->get('kantin_user_id');
         $user = KantinUser::query()->find($userId);
         $level = (int) $request->session()->get('level_kantin', 0);
@@ -19,14 +20,17 @@ class KantinHomeController extends Controller
         $today = now()->toDateString();
         $yesterday = now()->subDay()->toDateString();
 
+        // Order aktif kasir login pada hari ini.
         $openOrders = KantinOrder::query()
             ->where('kasir', $userId)
             ->whereDate('waktu_order', $today)
             ->count();
 
+        // Scope data order: jika level kios, batasi hanya kios miliknya.
         $todayOrderScope = DB::table('tb_order')
             ->when($level === 3 && $sessionKios !== '', fn ($q) => $q->where('tb_order.nama_kios', $sessionKios));
 
+        // Ringkasan transaksi harian untuk KPI dashboard.
         $todayOrderCount = (clone $todayOrderScope)
             ->whereDate('tb_order.waktu_order', $today)
             ->count();
@@ -42,12 +46,14 @@ class KantinHomeController extends Controller
             ->whereDate('tb_order.waktu_order', $yesterday)
             ->sum('tb_bayar.jumlah_bayar'));
 
+        // Hitung arah tren omzet terhadap hari sebelumnya.
         $trendDiff = $todayRevenue - $yesterdayRevenue;
         $trendPercent = $yesterdayRevenue > 0
             ? round(($trendDiff / $yesterdayRevenue) * 100, 1)
             : null;
         $trendDirection = $trendDiff > 0 ? 'up' : ($trendDiff < 0 ? 'down' : 'flat');
 
+        // Top kios hari ini untuk insight cepat di dashboard.
         $topKiosToday = DB::table('tb_order')
             ->leftJoin('tb_bayar', 'tb_bayar.id_bayar', '=', 'tb_order.id_order')
             ->selectRaw('tb_order.nama_kios, COUNT(tb_order.id_order) as total_order, COALESCE(SUM(tb_bayar.jumlah_bayar), 0) as total_omzet')
@@ -59,6 +65,7 @@ class KantinHomeController extends Controller
             ->limit(3)
             ->get();
 
+        // Dataset chart menu terlaris hari ini.
         $dailyRows = DB::table('tb_order')
             ->leftJoin('tb_list_order', 'tb_list_order.kode_order', '=', 'tb_order.id_order')
             ->leftJoin('tb_menu', 'tb_menu.id', '=', 'tb_list_order.menu')
@@ -70,6 +77,7 @@ class KantinHomeController extends Controller
             ->limit(5)
             ->get();
 
+        // Dataset chart menu terlaris minggu berjalan.
         $weeklyRows = DB::table('tb_order')
             ->leftJoin('tb_list_order', 'tb_list_order.kode_order', '=', 'tb_order.id_order')
             ->leftJoin('tb_menu', 'tb_menu.id', '=', 'tb_list_order.menu')
@@ -81,6 +89,7 @@ class KantinHomeController extends Controller
             ->limit(5)
             ->get();
 
+        // Kirim semua metrik agar view bisa render dashboard lengkap.
         return view('app.home', [
             'user' => $user,
             'openOrders' => $openOrders,

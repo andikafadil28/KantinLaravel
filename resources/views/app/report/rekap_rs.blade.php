@@ -12,6 +12,7 @@
 @endsection
 
 @section('content')
+{{-- Toolbar filter + export rekap RS --}}
 <div class="card shadow-lg border-0 mb-3">
     <div class="card-header bg-dark text-white fw-bold">
         <i class="bi bi-receipt-cutoff me-2"></i>Rekap RS
@@ -41,6 +42,7 @@
     </div>
 </div>
 
+{{-- Tabel rekap RS dan grand total --}}
 <div class="card shadow-lg border-0">
     <div class="card-body table-responsive">
         <table class="table table-striped table-hover table-bordered caption-top align-middle js-datatable">

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Struk Order {{ $order->id_order }}</title>
     <style>
+        /* Layout struk thermal 80mm */
         @page { size: 80mm auto; margin: 4mm; }
         body {
             margin: 0;
@@ -36,21 +37,25 @@
             font-size: 12px;
         }
         @media print {
+            /* Tombol aksi disembunyikan saat cetak */
             .actions { display: none; }
         }
     </style>
 </head>
 <body>
 <div class="wrap">
+    {{-- Tombol utilitas saat preview struk --}}
     <div class="actions">
         <button class="btn" onclick="window.print()">Print</button>
         <button class="btn" onclick="window.close()">Tutup</button>
     </div>
 
+    {{-- Header struk --}}
     <div class="center bold" style="font-size:16px;">Kantin Sakina</div>
     <div class="center bold">STRUK PEMBAYARAN</div>
     <div class="line"></div>
 
+    {{-- Informasi order --}}
     <div>Kode Order: {{ $order->id_order }}</div>
     <div>Waktu: {{ $order->waktu_order }}</div>
     <div>Kasir: {{ $order->kasirUser?->username ?? '-' }}</div>
@@ -59,6 +64,7 @@
 
     <div class="line"></div>
 
+    {{-- Daftar item yang dibeli --}}
     <table>
         <thead>
         <tr>
@@ -84,6 +90,7 @@
         </tbody>
     </table>
 
+    {{-- Ringkasan nominal pembayaran --}}
     <div class="line"></div>
     <table>
         <tr>
@@ -112,12 +119,14 @@
         </tr>
     </table>
 
+    {{-- Footer struk --}}
     <div class="line"></div>
     <div class="center small bold">Harga Sudah Termasuk Pajak</div>
     <div class="center small bold">Terima kasih atas kunjungan Anda</div>
 </div>
 @if(!empty($autoPrint))
 <script>
+    // Auto print dipakai saat struk dipanggil dari mode popup.
     window.addEventListener('load', function () {
         setTimeout(function () {
             window.print();

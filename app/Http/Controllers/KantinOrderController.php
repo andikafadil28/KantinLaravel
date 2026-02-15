@@ -16,6 +16,7 @@ class KantinOrderController extends Controller
 {
     public function index(Request $request): View
     {
+        // Filter order berdasarkan level user dan kios aktif.
         $level = (int) $request->session()->get('level_kantin', 0);
         $sessionKios = (string) $request->session()->get('nama_toko_kantin', '');
         $filter = (string) $request->query('kios_filter', '');
@@ -42,6 +43,7 @@ class KantinOrderController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        // Validasi order baru.
         $data = $request->validate([
             'id_order' => ['required', 'integer'],
             'meja' => ['required', 'string', 'max:255'],
@@ -54,6 +56,7 @@ class KantinOrderController extends Controller
             return back()->withErrors(['id_order' => 'Kode order sudah terdaftar.']);
         }
 
+        // Kasir diambil dari session agar tidak bisa dimanipulasi dari form.
         $data['kasir'] = (int) $request->session()->get('id_kantin');
         $data['catatan'] = $data['catatan'] ?? '';
         KantinOrder::query()->create($data);
@@ -99,6 +102,7 @@ class KantinOrderController extends Controller
             ->with(['items.menuRel', 'pembayaran'])
             ->findOrFail($id);
 
+        // Hanya admin yang boleh ubah order setelah dibayar.
         $level = (int) $request->session()->get('level_kantin', 0);
         $canEditPaid = $level === 1;
         $isPaid = $order->pembayaran !== null;
@@ -157,6 +161,7 @@ class KantinOrderController extends Controller
     public function addItem(Request $request, int $id): RedirectResponse
     {
         $order = KantinOrder::query()->with('pembayaran')->findOrFail($id);
+        // Cegah perubahan item jika order sudah lunas.
         if ($order->pembayaran) {
             return back()->withErrors(['item' => 'Order sudah dibayar, item tidak dapat ditambah.']);
         }
@@ -171,6 +176,7 @@ class KantinOrderController extends Controller
             ->where('kode_order', $order->id_order)
             ->where('menu', $data['menu'])
             ->exists();
+        // Cegah duplikasi menu pada satu order.
         if ($exists) {
             return back()->withErrors(['item' => 'Item sudah terdaftar dalam order ini.']);
         }
@@ -251,6 +257,7 @@ class KantinOrderController extends Controller
             'bayar' => ['required', 'string', 'max:32'],
         ]);
 
+        // Hitung total berdasarkan harga menu + pajak menu legacy.
         $total = 0.0;
         $totalPpn = 0.0;
         $totalToko = 0.0;
@@ -270,12 +277,14 @@ class KantinOrderController extends Controller
         $diskon = min(max(round($this->parseMoneyInput($request->input('diskon', '0')), 0), 0), $total);
         $grandTotal = max(0, (float) ceil($total - $diskon));
         $bayar = $this->parseMoneyInput((string) $request->input('bayar', '0'));
+        // Validasi nominal bayar harus cukup.
         if ($bayar < $grandTotal) {
             return back()->withErrors([
                 'pay' => 'Jumlah bayar tidak cukup. Total tagihan Rp ' . number_format($grandTotal, 0, ',', '.'),
             ])->withInput();
         }
 
+        // Simpan ringkasan pembayaran final ke tb_bayar.
         $hargaTokoFinal = max(0, (float) round($totalToko - $diskon, 0));
         $nominalRs = $grandTotal - $hargaTokoFinal;
         KantinBayar::query()->create([
@@ -300,6 +309,7 @@ class KantinOrderController extends Controller
 
     private function parseMoneyInput(string $value): float
     {
+        // Normalisasi berbagai format input rupiah (Rp, titik ribuan, koma).
         $normalized = Str::of($value)
             ->replace('Rp', '')
             ->replace([' ', "\u{00A0}"], '')
@@ -320,6 +330,7 @@ class KantinOrderController extends Controller
 
     private function buildOrderSummary(KantinOrder $order): array
     {
+        // Hitung subtotal, PPN, dan komponen toko per item.
         $rows = $order->items->map(function (KantinListOrder $item): array {
             $menu = $item->menuRel;
             $harga = (float) ($menu?->harga ?? 0);
