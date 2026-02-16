@@ -340,17 +340,17 @@
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
                             @if($isPaid)
-                                <a
+                                <button
                                     class="btn btn-sm btn-secondary"
                                     title="Print Struk"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="top"
-                                    href="{{ route('app.orders.receipt', ['id' => $order->id_order, 'autoprint' => 1]) }}"
-                                    target="_blank"
-                                    rel="noopener"
+                                    type="button"
+                                    data-receipt-url="{{ route('app.orders.receipt', ['id' => $order->id_order]) }}"
+                                    onclick="printReceiptFromOrderTable(this.dataset.receiptUrl)"
                                 >
                                     <i class="bi bi-printer-fill"></i>
-                                </a>
+                                </button>
                             @else
                                 <button class="btn btn-sm btn-secondary" type="button" title="Print Struk (setelah dibayar)" disabled>
                                     <i class="bi bi-printer-fill"></i>
@@ -474,6 +474,52 @@
 
 @push('scripts')
 <script>
+    function printReceiptFromOrderTable(url) {
+        if (!url) {
+            return;
+        }
+
+        const printableUrl = url + (url.includes('?') ? '&' : '?') + 'autoprint=1';
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.width = '1px';
+        iframe.style.height = '1px';
+        iframe.style.opacity = '0';
+        iframe.style.pointerEvents = 'none';
+        iframe.style.border = '0';
+        iframe.src = printableUrl;
+
+        let cleaned = false;
+        const clean = function () {
+            if (cleaned) {
+                return;
+            }
+            cleaned = true;
+            setTimeout(function () {
+                if (iframe.parentNode) {
+                    iframe.parentNode.removeChild(iframe);
+                }
+            }, 1200);
+        };
+
+        iframe.onload = function () {
+            try {
+                iframe.contentWindow.focus();
+                // print dipicu dari halaman receipt via autoprint=1 agar tidak dobel.
+            } catch (e) {
+                window.open(printableUrl, 'print_struk', 'width=420,height=700,menubar=no,toolbar=no,location=no,status=no');
+            }
+            clean();
+        };
+
+        iframe.onerror = function () {
+            window.open(printableUrl, 'print_struk', 'width=420,height=700,menubar=no,toolbar=no,location=no,status=no');
+            clean();
+        };
+
+        document.body.appendChild(iframe);
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         function parseRupiah(value) {
             const raw = String(value || '').replace(/[^0-9]/g, '');
