@@ -761,6 +761,7 @@
         <div class="menu-title">Utama</div>
         <nav class="nav flex-column">
             <a class="nav-link {{ request()->is('app/home') ? 'active' : '' }}" href="{{ url('/app/home') }}"><i class="bi bi-house-door"></i> <span class="label">Home</span></a>
+            <a class="nav-link" href="http://192.168.0.215:85/KantinSakina/login"><i class="bi bi-box-arrow-up-right"></i> <span class="label">aplikasi versi lama</span></a>
         </nav>
         <hr class="sidebar-divider my-0">
 

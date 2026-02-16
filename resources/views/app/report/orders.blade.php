@@ -67,7 +67,8 @@
             </div>
             <div class="col-auto d-flex gap-2">
                 <button class="btn btn-primary" type="submit"><i class="bi bi-funnel me-1"></i>Filter</button>
-                <a class="btn btn-outline-primary" href="{{ route('app.reports.orders.export', request()->query()) }}"><i class="bi bi-download me-1"></i>Export CSV</a>
+                <a class="btn btn-outline-primary" href="{{ route('app.reports.orders.export', request()->query()) }}"><i class="bi bi-download me-1"></i>Export Excel</a>
+                <a class="btn btn-outline-danger" href="{{ route('app.reports.orders.export', array_merge(request()->query(), ['format' => 'pdf'])) }}"><i class="bi bi-file-earmark-pdf me-1"></i>Export PDF</a>
             </div>
         </form>
         <div class="alert alert-info mt-3 mb-0">
@@ -154,3 +155,4 @@
     </div>
 </div>
 @endsection
+
