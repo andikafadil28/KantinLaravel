@@ -51,6 +51,7 @@ Route::middleware('kantin.auth')->group(function (): void {
     Route::get('/app/orders/{id}', [KantinOrderController::class, 'show'])->name('app.orders.show');
     Route::get('/app/orders/{id}/receipt', [KantinOrderController::class, 'receipt'])->name('app.orders.receipt');
     Route::post('/app/orders/{id}/items', [KantinOrderController::class, 'addItem'])->name('app.orders.items.store');
+    Route::post('/app/orders/{id}/items/clear', [KantinOrderController::class, 'clearItems'])->name('app.orders.items.clear');
     Route::post('/app/orders/{id}/items/{itemId}', [KantinOrderController::class, 'updateItem'])->name('app.orders.items.update');
     Route::delete('/app/orders/{id}/items/{itemId}', [KantinOrderController::class, 'deleteItem'])->name('app.orders.items.destroy');
     Route::post('/app/orders/{id}/pay', [KantinOrderController::class, 'pay'])->name('app.orders.pay');

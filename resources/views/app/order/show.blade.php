@@ -216,6 +216,16 @@
 {{-- Daftar item order + edit/hapus item --}}
 <div class="card order-section mb-3">
     <div class="card-body table-responsive">
+        @if($rows->isNotEmpty() && !$isPaid)
+            <div class="d-flex justify-content-end mb-2">
+                <form method="post" action="{{ route('app.orders.items.clear', $order->id_order) }}" onsubmit="return confirm('Hapus semua item pada order ini?')">
+                    @csrf
+                    <button class="btn btn-sm btn-outline-danger" type="submit">
+                        <i class="bi bi-trash3-fill me-1"></i>Hapus Semua Item
+                    </button>
+                </form>
+            </div>
+        @endif
         <table class="table table-bordered table-hover align-middle js-datatable order-items-table">
             <thead><tr><th>Menu</th><th>Harga</th><th>Qty</th><th>Catatan</th><th>Total</th><th style="min-width:260px;">Aksi</th></tr></thead>
             <tbody>
@@ -297,15 +307,17 @@
                 <button id="paySubmitBtn" class="btn {{ $isPaid ? 'btn-secondary' : 'btn-primary' }}" type="submit" {{ $isPaid ? 'disabled' : '' }}>
                     <i class="bi bi-cash-coin me-1"></i>Proses Bayar
                 </button>
-                <button
-                    type="button"
-                    class="btn {{ $isPaid ? 'btn-info' : 'btn-secondary' }}"
-                    data-receipt-url="{{ route('app.orders.receipt', ['id' => $order->id_order]) }}"
-                    onclick="printReceipt(this.dataset.receiptUrl)"
-                    {{ $isPaid ? '' : 'disabled' }}
-                >
-                    <i class="bi bi-printer me-1"></i>Print Struk
-                </button>
+                @if($rows->isNotEmpty())
+                    <button
+                        type="button"
+                        class="btn {{ $isPaid ? 'btn-info' : 'btn-secondary' }}"
+                        data-receipt-url="{{ route('app.orders.receipt', ['id' => $order->id_order]) }}"
+                        onclick="printReceipt(this.dataset.receiptUrl)"
+                        {{ $isPaid ? '' : 'disabled' }}
+                    >
+                        <i class="bi bi-printer me-1"></i>Print Struk
+                    </button>
+                @endif
                 @if($isPaid && (int) session('level_kantin', 0) === 1)
                     <form method="post" action="{{ route('app.orders.unpay', $order->id_order) }}" onsubmit="return confirm('Batalkan status bayar untuk order ini?')">
                         @csrf

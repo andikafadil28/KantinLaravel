@@ -292,6 +292,34 @@ class KantinOrderController extends Controller
         return back()->with('ok', 'Item berhasil dihapus.');
     }
 
+    public function clearItems(Request $request, int $id): RedirectResponse
+    {
+        $order = KantinOrder::query()->with('pembayaran')->findOrFail($id);
+
+        // Hapus semua item hanya untuk order yang belum dibayar.
+        if ($order->pembayaran) {
+            return back()->withErrors(['item' => 'Order sudah dibayar. Batalkan pembayaran terlebih dahulu sebelum menghapus semua item.']);
+        }
+
+        $deleted = KantinListOrder::query()
+            ->where('kode_order', $order->id_order)
+            ->delete();
+
+        if ($deleted <= 0) {
+            return back()->withErrors(['item' => 'Tidak ada item untuk dihapus.']);
+        }
+
+        $this->writeOrderAuditLog(
+            (int) $order->id_order,
+            'ITEM_CLEAR',
+            'Hapus semua item order. Jumlah item terhapus: ' . $deleted . '.',
+            (int) $request->session()->get('id_kantin', 0),
+            (string) $request->session()->get('username_kantin', 'unknown')
+        );
+
+        return back()->with('ok', 'Semua item order berhasil dihapus.');
+    }
+
     public function pay(Request $request, int $id): RedirectResponse
     {
         $order = KantinOrder::query()->with(['items.menuRel', 'pembayaran'])->findOrFail($id);

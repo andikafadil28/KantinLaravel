@@ -311,6 +311,8 @@
                     $diskon = (float)($order->pembayaran?->diskon ?? 0);
                     $final = max(0, ceil($sum - $diskon));
                     $isPaid = $order->pembayaran !== null;
+                    $hasItems = $order->items->isNotEmpty();
+                    $showClearItemsBtn = $hasItems && !$isPaid;
                 @endphp
             <tr>
                     <td data-label="No" class="text-center">{{ $idx + 1 }}</td>
@@ -339,42 +341,54 @@
                             <button class="btn btn-sm btn-warning" type="button" title="Edit Order" data-bs-toggle="modal" data-bs-target="#editOrderModal{{ $order->id_order }}">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
-                            @if($isPaid)
-                                <button
-                                    class="btn btn-sm btn-secondary"
-                                    title="Print Struk"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    type="button"
-                                    data-receipt-url="{{ route('app.orders.receipt', ['id' => $order->id_order]) }}"
-                                    onclick="printReceiptFromOrderTable(this.dataset.receiptUrl)"
-                                >
-                                    <i class="bi bi-printer-fill"></i>
-                                </button>
-                                @if((int) $level === 1)
-                                    <form method="post" action="{{ route('app.orders.unpay', $order->id_order) }}" onsubmit="return confirm('Batalkan status bayar untuk order ini?')">
-                                        @csrf
-                                        <button class="btn btn-sm btn-outline-warning" type="submit" title="Batalkan Bayar" data-bs-toggle="tooltip" data-bs-placement="top">
-                                            <i class="bi bi-arrow-counterclockwise"></i>
-                                        </button>
-                                    </form>
-                                @endif
-                            @else
-                                <button class="btn btn-sm btn-secondary" type="button" title="Print Struk (setelah dibayar)" disabled>
-                                    <i class="bi bi-printer-fill"></i>
-                                </button>
+                            @if($showClearItemsBtn)
+                                <form method="post" action="{{ route('app.orders.items.clear', $order->id_order) }}" onsubmit="return confirm('Hapus semua item pada order ini?')">
+                                    @csrf
+                                    <button class="btn btn-sm btn-outline-danger" type="submit" title="Hapus Semua Item" data-bs-toggle="tooltip" data-bs-placement="top">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </form>
                             @endif
-                            @if(!$isPaid)
+                            @if($hasItems)
+                                @if($isPaid)
+                                    <button
+                                        class="btn btn-sm btn-secondary"
+                                        title="Print Struk"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        type="button"
+                                        data-receipt-url="{{ route('app.orders.receipt', ['id' => $order->id_order]) }}"
+                                        onclick="printReceiptFromOrderTable(this.dataset.receiptUrl)"
+                                    >
+                                        <i class="bi bi-printer-fill"></i>
+                                    </button>
+                                    @if((int) $level === 1)
+                                        <form method="post" action="{{ route('app.orders.unpay', $order->id_order) }}" onsubmit="return confirm('Batalkan status bayar untuk order ini?')">
+                                            @csrf
+                                            <button class="btn btn-sm btn-outline-warning" type="submit" title="Batalkan Bayar" data-bs-toggle="tooltip" data-bs-placement="top">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                @else
+                                    <button class="btn btn-sm btn-secondary" type="button" title="Print Struk (setelah dibayar)" disabled>
+                                        <i class="bi bi-printer-fill"></i>
+                                    </button>
+                                @endif
+                            @endif
+                            @if(!$isPaid && $hasItems)
                                 <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-placement="top" data-bs-target="#quickPay{{ $order->id_order }}" aria-expanded="false" aria-controls="quickPay{{ $order->id_order }}" title="Bayar Cepat">
                                     <i class="bi bi-cash-coin"></i>
                                 </button>
                             @endif
-                            <form method="post" action="{{ route('app.orders.destroy', $order->id_order) }}" onsubmit="return confirm('Hapus order ini?')">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-danger" title="Hapus Order" data-bs-toggle="tooltip" data-bs-placement="top" type="submit"><i class="bi bi-trash-fill"></i></button>
-                            </form>
+                            @if(!$showClearItemsBtn)
+                                <form method="post" action="{{ route('app.orders.destroy', $order->id_order) }}" onsubmit="return confirm('Hapus order ini?')">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-danger" title="Hapus Order" data-bs-toggle="tooltip" data-bs-placement="top" type="submit"><i class="bi bi-trash-fill"></i></button>
+                                </form>
+                            @endif
                         </div>
-                        @if(!$isPaid)
+                        @if(!$isPaid && $hasItems)
                             <div class="collapse mt-2" id="quickPay{{ $order->id_order }}">
                                 <form method="post" action="{{ route('app.orders.pay', $order->id_order) }}" class="row g-1 order-paybox js-quick-pay-form" data-order-total="{{ (int) $final }}">
                                     @csrf
