@@ -10,6 +10,8 @@ use App\Models\KantinOrder;
 use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class KantinOrderController extends Controller
@@ -60,6 +62,13 @@ class KantinOrderController extends Controller
         $data['kasir'] = (int) $request->session()->get('id_kantin');
         $data['catatan'] = $data['catatan'] ?? '';
         KantinOrder::query()->create($data);
+        $this->writeOrderAuditLog(
+            (int) $data['id_order'],
+            'ORDER_CREATE',
+            'Order dibuat untuk pelanggan ' . $data['pelanggan'] . ' (kios: ' . $data['nama_kios'] . ').',
+            (int) $request->session()->get('id_kantin', 0),
+            (string) $request->session()->get('username_kantin', 'unknown')
+        );
 
         return redirect('/app/orders/' . $data['id_order']);
     }
@@ -80,6 +89,13 @@ class KantinOrderController extends Controller
             'nama_kios' => $data['nama_kios'],
             'catatan' => $data['catatan'] ?? '',
         ]);
+        $this->writeOrderAuditLog(
+            (int) $order->id_order,
+            'ORDER_UPDATE',
+            'Order diperbarui. Pelanggan: ' . $data['pelanggan'] . ', meja: ' . $data['meja'] . '.',
+            (int) $request->session()->get('id_kantin', 0),
+            (string) $request->session()->get('username_kantin', 'unknown')
+        );
 
         return back()->with('ok', 'Order berhasil diperbarui.');
     }
@@ -87,11 +103,20 @@ class KantinOrderController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $order = KantinOrder::query()->findOrFail($id);
+        $actorId = (int) session('id_kantin', 0);
+        $actorUsername = (string) session('username_kantin', 'unknown');
         if ($order->items()->exists()) {
             return back()->withErrors(['order' => 'Order tidak dapat dihapus karena masih memiliki item.']);
         }
 
         $order->delete();
+        $this->writeOrderAuditLog(
+            (int) $id,
+            'ORDER_DELETE',
+            'Order dihapus.',
+            $actorId,
+            $actorUsername
+        );
 
         return back()->with('ok', 'Order berhasil dihapus.');
     }
@@ -188,6 +213,13 @@ class KantinOrderController extends Controller
             'catatan_order' => $data['catatan_order'] ?? '',
             'status' => '0',
         ]);
+        $this->writeOrderAuditLog(
+            (int) $order->id_order,
+            'ITEM_ADD',
+            'Tambah item menu #' . $data['menu'] . ' qty ' . $data['jumlah'] . '.',
+            (int) $request->session()->get('id_kantin', 0),
+            (string) $request->session()->get('username_kantin', 'unknown')
+        );
 
         return back()->with('ok', 'Item berhasil ditambahkan.');
     }
@@ -224,6 +256,13 @@ class KantinOrderController extends Controller
             'jumlah' => $data['jumlah'],
             'catatan_order' => $data['catatan_order'] ?? '',
         ]);
+        $this->writeOrderAuditLog(
+            (int) $order->id_order,
+            'ITEM_UPDATE',
+            'Update item #' . $item->id_list_order . ' ke menu #' . $data['menu'] . ' qty ' . $data['jumlah'] . '.',
+            (int) $request->session()->get('id_kantin', 0),
+            (string) $request->session()->get('username_kantin', 'unknown')
+        );
 
         return back()->with('ok', 'Item berhasil diperbarui.');
     }
@@ -240,7 +279,15 @@ class KantinOrderController extends Controller
             return back()->withErrors(['item' => 'Order sudah dibayar, item tidak dapat dihapus.']);
         }
 
+        $deletedItemId = (int) $item->id_list_order;
         $item->delete();
+        $this->writeOrderAuditLog(
+            (int) $order->id_order,
+            'ITEM_DELETE',
+            'Hapus item #' . $deletedItemId . '.',
+            (int) $request->session()->get('id_kantin', 0),
+            (string) $request->session()->get('username_kantin', 'unknown')
+        );
 
         return back()->with('ok', 'Item berhasil dihapus.');
     }
@@ -301,10 +348,71 @@ class KantinOrderController extends Controller
         KantinListOrder::query()->where('kode_order', $order->id_order)->update([
             'status' => 'Lunas',
         ]);
+        $this->writeOrderAuditLog(
+            (int) $order->id_order,
+            'PAY',
+            'Pembayaran diproses. Grand total: ' . $grandTotal . ', bayar: ' . $bayar . ', diskon: ' . $diskon . '.',
+            (int) $request->session()->get('id_kantin', 0),
+            (string) $request->session()->get('username_kantin', 'unknown')
+        );
 
         $kembalian = $bayar - $grandTotal;
 
         return back()->with('ok', 'Pembayaran berhasil. Kembalian: Rp ' . number_format($kembalian, 0, ',', '.'));
+    }
+
+    public function unpay(Request $request, int $id): RedirectResponse
+    {
+        // Pembatalan bayar hanya boleh dilakukan admin.
+        if ((int) $request->session()->get('level_kantin', 0) !== 1) {
+            abort(403, 'Hanya admin yang dapat membatalkan pembayaran.');
+        }
+
+        $order = KantinOrder::query()->with('pembayaran')->findOrFail($id);
+        if (!$order->pembayaran) {
+            return back()->withErrors(['pay' => 'Order ini belum memiliki data pembayaran.']);
+        }
+
+        $paySnapshot = [
+            'jumlah_bayar' => (float) ($order->pembayaran->jumlah_bayar ?? 0),
+            'nominal_uang' => (float) ($order->pembayaran->nominal_uang ?? 0),
+            'diskon' => (float) ($order->pembayaran->diskon ?? 0),
+        ];
+        $actorId = (int) $request->session()->get('id_kantin', 0);
+        $actorUsername = (string) $request->session()->get('username_kantin', 'unknown');
+
+        DB::transaction(function () use ($order): void {
+            KantinBayar::query()->where('id_bayar', $order->id_order)->delete();
+            KantinListOrder::query()
+                ->where('kode_order', $order->id_order)
+                ->update(['status' => '0']);
+        });
+
+        $this->writeOrderAuditLog(
+            $order->id_order,
+            'UNPAY',
+            'Pembayaran dibatalkan. Snapshot sebelum batal: ' . json_encode($paySnapshot, JSON_UNESCAPED_UNICODE),
+            $actorId,
+            $actorUsername
+        );
+
+        return back()->with('ok', 'Pembayaran berhasil dibatalkan.');
+    }
+
+    private function writeOrderAuditLog(int $orderId, string $action, string $description, int $actorId, string $actorUsername): void
+    {
+        if (!Schema::hasTable('tb_audit_kantin')) {
+            return;
+        }
+
+        DB::table('tb_audit_kantin')->insert([
+            'order_id' => $orderId,
+            'action' => $action,
+            'description' => $description,
+            'actor_id' => $actorId > 0 ? $actorId : null,
+            'actor_username' => $actorUsername !== '' ? $actorUsername : null,
+            'created_at' => now(),
+        ]);
     }
 
     private function parseMoneyInput(string $value): float

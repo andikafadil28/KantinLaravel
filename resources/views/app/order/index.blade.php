@@ -351,6 +351,14 @@
                                 >
                                     <i class="bi bi-printer-fill"></i>
                                 </button>
+                                @if((int) $level === 1)
+                                    <form method="post" action="{{ route('app.orders.unpay', $order->id_order) }}" onsubmit="return confirm('Batalkan status bayar untuk order ini?')">
+                                        @csrf
+                                        <button class="btn btn-sm btn-outline-warning" type="submit" title="Batalkan Bayar" data-bs-toggle="tooltip" data-bs-placement="top">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                        </button>
+                                    </form>
+                                @endif
                             @else
                                 <button class="btn btn-sm btn-secondary" type="button" title="Print Struk (setelah dibayar)" disabled>
                                     <i class="bi bi-printer-fill"></i>

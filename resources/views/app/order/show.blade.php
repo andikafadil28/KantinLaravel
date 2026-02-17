@@ -190,6 +190,7 @@
             <div class="col-md-2"><label class="form-label">Jumlah</label><input id="addQtyInput" class="form-control" type="number" name="jumlah" min="1" required></div>
             <div class="col-md-5"><label class="form-label">Catatan</label><input id="addNoteInput" class="form-control" name="catatan_order"></div>
             <div class="col-12 d-flex flex-wrap align-items-center gap-2">
+                <a class="btn btn-outline-secondary" href="{{ url('/app/orders') }}"><i class="bi bi-arrow-left me-1"></i>Back ke Transaksi Order</a>
                 <button id="addItemSubmitBtn" class="btn {{ $canModify ? 'btn-primary' : 'btn-secondary' }}" type="submit" {{ $canModify ? '' : 'disabled' }}><i class="bi bi-plus-circle me-1"></i>Tambah</button>
                 <span class="shortcut-note">Shortcut: <strong>/</strong> fokus menu, <strong>Enter</strong> tambah item, <strong>Ctrl+S</strong> bayar.</span>
             </div>
@@ -305,6 +306,14 @@
                 >
                     <i class="bi bi-printer me-1"></i>Print Struk
                 </button>
+                @if($isPaid && (int) session('level_kantin', 0) === 1)
+                    <form method="post" action="{{ route('app.orders.unpay', $order->id_order) }}" onsubmit="return confirm('Batalkan status bayar untuk order ini?')">
+                        @csrf
+                        <button class="btn btn-outline-warning" type="submit">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Batalkan Bayar
+                        </button>
+                    </form>
+                @endif
                 @if($isPaid)
                     <div class="d-flex align-items-center gap-2 ms-sm-2">
                         <label for="printModeSelect" class="small text-muted mb-0">Mode Print</label>

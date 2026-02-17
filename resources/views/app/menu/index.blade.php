@@ -75,8 +75,8 @@
                 <input class="form-control" type="number" step="0.01" name="pajak" required>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Foto</label>
-                <input class="form-control" type="file" name="foto" accept="image/*" required>
+                <label class="form-label">Foto (opsional)</label>
+                <input class="form-control" type="file" name="foto" accept="image/*">
             </div>
             <div class="col-12">
                 <label class="form-label">Keterangan</label>

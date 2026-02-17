@@ -32,10 +32,12 @@ class KantinMenuController extends Controller
             'nama_toko' => ['required', 'string', 'max:100'],
             'harga' => ['required', 'numeric', 'min:0'],
             'pajak' => ['required', 'numeric', 'min:0'],
-            'foto' => ['required', 'image', 'max:2048'],
+            'foto' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        $data['foto'] = $request->file('foto')->store('menu', 'public');
+        $data['foto'] = $request->hasFile('foto')
+            ? $request->file('foto')->store('menu', 'public')
+            : '';
         KantinMenu::query()->create($data);
 
         return back()->with('ok', 'Menu berhasil ditambahkan.');

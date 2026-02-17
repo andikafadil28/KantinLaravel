@@ -808,19 +808,20 @@
         @if((int) session('level_kantin') === 1)
             <hr class="sidebar-divider">
             <nav class="nav flex-column">
-                <a class="nav-link collapse-toggle {{ request()->is('app/users*') || request()->is('app/kios*') ? 'active' : '' }}"
+                <a class="nav-link collapse-toggle {{ request()->is('app/users*') || request()->is('app/kios*') || request()->is('app/audit-logs*') ? 'active' : '' }}"
                    data-bs-toggle="collapse"
                    href="#menuPengaturan"
                    role="button"
-                   aria-expanded="{{ request()->is('app/users*') || request()->is('app/kios*') ? 'true' : 'false' }}"
+                   aria-expanded="{{ request()->is('app/users*') || request()->is('app/kios*') || request()->is('app/audit-logs*') ? 'true' : 'false' }}"
                    aria-controls="menuPengaturan">
                     <i class="bi bi-gear-fill"></i> <span class="label">Pengaturan Sistem</span>
                 </a>
-                <div class="collapse {{ request()->is('app/users*') || request()->is('app/kios*') ? 'show' : '' }}" id="menuPengaturan">
+                <div class="collapse {{ request()->is('app/users*') || request()->is('app/kios*') || request()->is('app/audit-logs*') ? 'show' : '' }}" id="menuPengaturan">
                     <div class="sidebar-sub">
                         <div class="sidebar-sub-title">Manajemen Data</div>
                         <a class="nav-link {{ request()->is('app/users*') ? 'active' : '' }}" href="{{ url('/app/users') }}">Manajemen User</a>
                         <a class="nav-link {{ request()->is('app/kios*') ? 'active' : '' }}" href="{{ url('/app/kios') }}">Manajemen Toko</a>
+                        <a class="nav-link {{ request()->is('app/audit-logs*') ? 'active' : '' }}" href="{{ url('/app/audit-logs') }}">Log Transaksi</a>
                     </div>
                 </div>
             </nav>

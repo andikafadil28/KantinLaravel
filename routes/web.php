@@ -54,6 +54,7 @@ Route::middleware('kantin.auth')->group(function (): void {
     Route::post('/app/orders/{id}/items/{itemId}', [KantinOrderController::class, 'updateItem'])->name('app.orders.items.update');
     Route::delete('/app/orders/{id}/items/{itemId}', [KantinOrderController::class, 'deleteItem'])->name('app.orders.items.destroy');
     Route::post('/app/orders/{id}/pay', [KantinOrderController::class, 'pay'])->name('app.orders.pay');
+    Route::post('/app/orders/{id}/unpay', [KantinOrderController::class, 'unpay'])->name('app.orders.unpay');
 
     Route::get('/app/reports/orders', [KantinReportController::class, 'orders'])->name('app.reports.orders');
     Route::get('/app/reports/rs', [KantinReportController::class, 'rs'])->name('app.reports.rs');
@@ -76,6 +77,7 @@ Route::middleware('kantin.auth')->group(function (): void {
     Route::post('/app/users', [KantinAdminController::class, 'storeUser'])->name('app.users.store');
     Route::post('/app/users/{id}', [KantinAdminController::class, 'updateUser'])->name('app.users.update');
     Route::delete('/app/users/{id}', [KantinAdminController::class, 'deleteUser'])->name('app.users.destroy');
+    Route::get('/app/audit-logs', [KantinAdminController::class, 'auditLogs'])->name('app.audit_logs.index');
 
     Route::get('/app/kios', [KantinAdminController::class, 'kios'])->name('app.kios.index');
     Route::post('/app/kios', [KantinAdminController::class, 'storeKios'])->name('app.kios.store');

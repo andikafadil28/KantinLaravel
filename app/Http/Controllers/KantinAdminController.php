@@ -6,6 +6,8 @@ use App\Models\KantinKios;
 use App\Models\KantinUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class KantinAdminController extends Controller
@@ -127,6 +129,23 @@ class KantinAdminController extends Controller
         KantinKios::query()->where('id', $id)->delete();
 
         return back()->with('ok', 'Kios berhasil dihapus.');
+    }
+
+    public function auditLogs(Request $request): View
+    {
+        $this->ensureAdmin($request);
+
+        $logs = collect();
+        if (Schema::hasTable('tb_audit_kantin')) {
+            $logs = DB::table('tb_audit_kantin')
+                ->orderByDesc('id')
+                ->limit(1000)
+                ->get();
+        }
+
+        return view('app.admin.audit_logs', [
+            'logs' => $logs,
+        ]);
     }
 
     private function ensureAdmin(Request $request): void
