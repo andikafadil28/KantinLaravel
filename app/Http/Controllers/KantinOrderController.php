@@ -144,7 +144,11 @@ class KantinOrderController extends Controller
         return view('app.order.show', [
             'order' => $order,
             'rows' => $rows,
-            'menus' => KantinMenu::query()->where('nama_toko', $order->nama_kios)->orderBy('nama')->get(),
+            'menus' => KantinMenu::query()
+                ->where('nama_toko', $order->nama_kios)
+                ->where('status', 1)
+                ->orderBy('nama')
+                ->get(),
             'total' => $total,
             'totalPpn' => $totalPpn,
             'totalToko' => $totalToko,

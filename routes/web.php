@@ -42,6 +42,7 @@ Route::middleware('kantin.auth')->group(function (): void {
     Route::get('/app/menu', [KantinMenuController::class, 'index'])->name('app.menu.index');
     Route::post('/app/menu', [KantinMenuController::class, 'store'])->name('app.menu.store');
     Route::post('/app/menu/{id}', [KantinMenuController::class, 'update'])->name('app.menu.update');
+    Route::post('/app/menu/{id}/status', [KantinMenuController::class, 'updateStatus'])->name('app.menu.status');
     Route::delete('/app/menu/{id}', [KantinMenuController::class, 'destroy'])->name('app.menu.destroy');
 
     Route::get('/app/orders', [KantinOrderController::class, 'index'])->name('app.orders.index');

@@ -108,6 +108,7 @@
             </thead>
             <tbody>
             @forelse($menus as $menu)
+                @php($isActive = (int) ($menu->status ?? 1) === 1)
                 <tr>
                     <td>{{ $menu->id }}</td>
                     <td>
@@ -115,7 +116,11 @@
                             <img src="{{ str_starts_with($menu->foto, 'menu/') ? asset('storage/'.$menu->foto) : url('/legacy/assets/img/'.$menu->foto) }}" alt="{{ $menu->nama }}" width="64" class="rounded">
                         @endif
                     </td>
-                    <td>{{ $menu->nama }}<br><small class="text-muted">{{ $menu->keterangan }}</small></td>
+                    <td>
+                        {{ $menu->nama }}
+                        <span class="badge {{ $isActive ? 'bg-success' : 'bg-secondary' }} ms-1">{{ $isActive ? 'Aktif' : 'Nonaktif' }}</span>
+                        <br><small class="text-muted">{{ $menu->keterangan }}</small>
+                    </td>
                     <td>{{ $menu->nama_toko }}</td>
                     <td>{{ number_format((float)$menu->harga, 0, ',', '.') }}</td>
                     <td>{{ number_format((float)$menu->pajak, 0, ',', '.') }}</td>
@@ -124,6 +129,13 @@
                             <button class="btn btn-sm btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#editMenuModal{{ $menu->id }}" aria-label="Edit menu {{ $menu->nama }}" title="Edit menu">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
+                            <form method="post" action="{{ route('app.menu.status', $menu->id) }}">
+                                @csrf
+                                <input type="hidden" name="status" value="{{ $isActive ? 0 : 1 }}">
+                                <button class="btn btn-sm {{ $isActive ? 'btn-outline-danger' : 'btn-outline-success' }}" type="submit" aria-label="{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }} menu {{ $menu->nama }}" title="{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }} menu">
+                                    <i class="bi {{ $isActive ? 'bi-x-circle' : 'bi-check-circle' }}"></i>
+                                </button>
+                            </form>
                                 <form method="post" action="{{ route('app.menu.destroy', $menu->id) }}" onsubmit="return confirm('Hapus menu ini?')">
                                     @csrf
                                     @method('DELETE')
@@ -196,6 +208,14 @@
                                         <option value="{{ $item->nama }}" @selected($menu->nama_toko === $item->nama)>{{ $item->nama }}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label d-block">Status</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="status" value="1" id="menuStatus{{ $menu->id }}" @checked((int)($menu->status ?? 1) === 1)>
+                                    <label class="form-check-label" for="menuStatus{{ $menu->id }}">Aktif</label>
+                                </div>
+                                <input type="hidden" name="status" value="0">
                             </div>
                         </div>
                     </div>

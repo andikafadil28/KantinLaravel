@@ -38,6 +38,7 @@ class KantinMenuController extends Controller
         $data['foto'] = $request->hasFile('foto')
             ? $request->file('foto')->store('menu', 'public')
             : '';
+        $data['status'] = 1;
         KantinMenu::query()->create($data);
 
         return back()->with('ok', 'Menu berhasil ditambahkan.');
@@ -68,6 +69,20 @@ class KantinMenuController extends Controller
         $menu->update($data);
 
         return back()->with('ok', 'Menu berhasil diperbarui.');
+    }
+
+    public function updateStatus(Request $request, int $id): RedirectResponse
+    {
+        $menu = KantinMenu::query()->findOrFail($id);
+        $data = $request->validate([
+            'status' => ['required', 'in:0,1'],
+        ]);
+
+        $menu->update([
+            'status' => (int) $data['status'],
+        ]);
+
+        return back()->with('ok', 'Status menu berhasil diperbarui.');
     }
 
     public function destroy(int $id): RedirectResponse

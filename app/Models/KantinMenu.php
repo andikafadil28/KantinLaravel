@@ -20,6 +20,7 @@ class KantinMenu extends Model
         'nama_toko',
         'harga',
         'pajak',
+        'status',
     ];
 
     public function kategoriRel(): BelongsTo
