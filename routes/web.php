@@ -40,10 +40,10 @@ Route::post('/app/logout', [KantinAuthController::class, 'logout'])->name('app.l
 Route::middleware('kantin.auth')->group(function (): void {
     Route::get('/app/home', [KantinHomeController::class, 'index'])->name('app.home');
     Route::get('/app/menu', [KantinMenuController::class, 'index'])->name('app.menu.index');
-    Route::post('/app/menu', [KantinMenuController::class, 'store'])->name('app.menu.store');
-    Route::post('/app/menu/{id}', [KantinMenuController::class, 'update'])->name('app.menu.update');
-    Route::post('/app/menu/{id}/status', [KantinMenuController::class, 'updateStatus'])->name('app.menu.status');
-    Route::delete('/app/menu/{id}', [KantinMenuController::class, 'destroy'])->name('app.menu.destroy');
+    Route::post('/app/menu', [KantinMenuController::class, 'store'])->middleware('kantin.menu.manage')->name('app.menu.store');
+    Route::post('/app/menu/{id}', [KantinMenuController::class, 'update'])->middleware('kantin.menu.manage')->name('app.menu.update');
+    Route::post('/app/menu/{id}/status', [KantinMenuController::class, 'updateStatus'])->middleware('kantin.menu.manage')->name('app.menu.status');
+    Route::delete('/app/menu/{id}', [KantinMenuController::class, 'destroy'])->middleware('kantin.menu.manage')->name('app.menu.destroy');
 
     Route::get('/app/orders', [KantinOrderController::class, 'index'])->name('app.orders.index');
     Route::post('/app/orders', [KantinOrderController::class, 'store'])->name('app.orders.store');

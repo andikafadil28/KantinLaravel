@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'kantin.auth' => \App\Http\Middleware\EnsureKantinAuthenticated::class,
+            'kantin.menu.manage' => \App\Http\Middleware\EnsureKantinMenuManageAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

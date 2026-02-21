@@ -38,56 +38,59 @@
 @endpush
 
 @section('content')
+@php($isKasir = (int) session('level_kantin', 0) === 2)
 {{-- Form tambah menu baru --}}
-<div class="card menu-page-section shadow-lg border-0 mb-3">
-    <div class="card-header fw-bold">
-        <i class="bi bi-fork-knife me-2"></i>Menu
+@unless($isKasir)
+    <div class="card menu-page-section shadow-lg border-0 mb-3">
+        <div class="card-header fw-bold">
+            <i class="bi bi-fork-knife me-2"></i>Menu
+        </div>
+        <div class="card-body">
+            <form method="post" action="{{ route('app.menu.store') }}" enctype="multipart/form-data" class="row g-3 legacy-form-compact">
+                @csrf
+                <div class="col-md-4">
+                    <label class="form-label">Nama</label>
+                    <input class="form-control" type="text" name="nama" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Kategori</label>
+                    <select class="form-select js-select2" name="kategori" required>
+                        @foreach($kategories as $item)
+                            <option value="{{ $item->id_kategori }}">{{ $item->kategori_menu }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Kios</label>
+                    <select class="form-select js-select2" name="nama_toko" required>
+                        @foreach($kios as $item)
+                            <option value="{{ $item->nama }}">{{ $item->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Harga</label>
+                    <input class="form-control" type="number" step="0.01" name="harga" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Pajak</label>
+                    <input class="form-control" type="number" step="0.01" name="pajak" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Foto (opsional)</label>
+                    <input class="form-control" type="file" name="foto" accept="image/*">
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Keterangan</label>
+                    <input class="form-control" type="text" name="keterangan" required>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary" type="submit"><i class="bi bi-plus-circle me-1"></i>Simpan</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="card-body">
-        <form method="post" action="{{ route('app.menu.store') }}" enctype="multipart/form-data" class="row g-3 legacy-form-compact">
-            @csrf
-            <div class="col-md-4">
-                <label class="form-label">Nama</label>
-                <input class="form-control" type="text" name="nama" required>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Kategori</label>
-                <select class="form-select js-select2" name="kategori" required>
-                    @foreach($kategories as $item)
-                        <option value="{{ $item->id_kategori }}">{{ $item->kategori_menu }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Kios</label>
-                <select class="form-select js-select2" name="nama_toko" required>
-                    @foreach($kios as $item)
-                        <option value="{{ $item->nama }}">{{ $item->nama }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Harga</label>
-                <input class="form-control" type="number" step="0.01" name="harga" required>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Pajak</label>
-                <input class="form-control" type="number" step="0.01" name="pajak" required>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label">Foto (opsional)</label>
-                <input class="form-control" type="file" name="foto" accept="image/*">
-            </div>
-            <div class="col-12">
-                <label class="form-label">Keterangan</label>
-                <input class="form-control" type="text" name="keterangan" required>
-            </div>
-            <div class="col-12">
-                <button class="btn btn-primary" type="submit"><i class="bi bi-plus-circle me-1"></i>Simpan</button>
-            </div>
-        </form>
-    </div>
-</div>
+@endunless
 
 {{-- Tabel daftar menu + aksi edit/hapus --}}
 <div class="card menu-page-section shadow-lg border-0">
@@ -103,7 +106,7 @@
                 <th>Kios</th>
                 <th>Harga</th>
                 <th>Pajak</th>
-                <th style="min-width:300px;">Aksi</th>
+                <th style="min-width:{{ $isKasir ? '120px' : '300px' }};">Aksi</th>
             </tr>
             </thead>
             <tbody>
@@ -125,23 +128,27 @@
                     <td>{{ number_format((float)$menu->harga, 0, ',', '.') }}</td>
                     <td>{{ number_format((float)$menu->pajak, 0, ',', '.') }}</td>
                     <td>
-                        <div class="table-actions">
-                            <button class="btn btn-sm btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#editMenuModal{{ $menu->id }}" aria-label="Edit menu {{ $menu->nama }}" title="Edit menu">
-                                <i class="bi bi-pencil-fill"></i>
-                            </button>
-                            <form method="post" action="{{ route('app.menu.status', $menu->id) }}">
-                                @csrf
-                                <input type="hidden" name="status" value="{{ $isActive ? 0 : 1 }}">
-                                <button class="btn btn-sm {{ $isActive ? 'btn-outline-danger' : 'btn-outline-success' }}" type="submit" aria-label="{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }} menu {{ $menu->nama }}" title="{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }} menu">
-                                    <i class="bi {{ $isActive ? 'bi-x-circle' : 'bi-check-circle' }}"></i>
+                        @if($isKasir)
+                            <span class="badge bg-info text-dark">Lihat saja</span>
+                        @else
+                            <div class="table-actions">
+                                <button class="btn btn-sm btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#editMenuModal{{ $menu->id }}" aria-label="Edit menu {{ $menu->nama }}" title="Edit menu">
+                                    <i class="bi bi-pencil-fill"></i>
                                 </button>
-                            </form>
+                                <form method="post" action="{{ route('app.menu.status', $menu->id) }}">
+                                    @csrf
+                                    <input type="hidden" name="status" value="{{ $isActive ? 0 : 1 }}">
+                                    <button class="btn btn-sm {{ $isActive ? 'btn-outline-danger' : 'btn-outline-success' }}" type="submit" aria-label="{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }} menu {{ $menu->nama }}" title="{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }} menu">
+                                        <i class="bi {{ $isActive ? 'bi-x-circle' : 'bi-check-circle' }}"></i>
+                                    </button>
+                                </form>
                                 <form method="post" action="{{ route('app.menu.destroy', $menu->id) }}" onsubmit="return confirm('Hapus menu ini?')">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-danger" type="submit" aria-label="Hapus menu {{ $menu->nama }}" title="Hapus menu"><i class="bi bi-trash-fill"></i></button>
                                 </form>
-                        </div>
+                            </div>
+                        @endif
                     </td>
                 </tr>
             @empty
@@ -150,7 +157,7 @@
                         <div class="d-flex flex-column align-items-center gap-1">
                             <i class="bi bi-inbox icon"></i>
                             <div class="fw-bold">Belum ada data menu</div>
-                            <div class="small text-muted">Tambahkan menu baru dari form di atas.</div>
+                            <div class="small text-muted">{{ $isKasir ? 'Menu hanya bisa dilihat untuk akun kasir.' : 'Tambahkan menu baru dari form di atas.' }}</div>
                         </div>
                     </td>
                 </tr>
@@ -161,71 +168,73 @@
 </div>
 
 {{-- Modal edit per baris menu --}}
-@foreach($menus as $menu)
-    <div class="modal fade app-modal" id="editMenuModal{{ $menu->id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <form method="post" action="{{ route('app.menu.update', $menu->id) }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-header">
-                        <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Edit Menu: {{ $menu->nama }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row g-2">
-                            <div class="col-md-6">
-                                <label class="form-label">Nama</label>
-                                <input class="form-control" name="nama" value="{{ $menu->nama }}" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Keterangan</label>
-                                <input class="form-control" name="keterangan" value="{{ $menu->keterangan }}" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Harga</label>
-                                <input class="form-control" type="number" step="0.01" name="harga" value="{{ $menu->harga }}" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Pajak</label>
-                                <input class="form-control" type="number" step="0.01" name="pajak" value="{{ $menu->pajak }}" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Ganti Foto (opsional)</label>
-                                <input class="form-control" type="file" name="foto" accept="image/*">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Kategori</label>
-                                <select class="form-select" name="kategori" required>
-                                    @foreach($kategories as $item)
-                                        <option value="{{ $item->id_kategori }}" @selected((int)$menu->kategori === (int)$item->id_kategori)>{{ $item->kategori_menu }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Kios</label>
-                                <select class="form-select" name="nama_toko" required>
-                                    @foreach($kios as $item)
-                                        <option value="{{ $item->nama }}" @selected($menu->nama_toko === $item->nama)>{{ $item->nama }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label d-block">Status</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="status" value="1" id="menuStatus{{ $menu->id }}" @checked((int)($menu->status ?? 1) === 1)>
-                                    <label class="form-check-label" for="menuStatus{{ $menu->id }}">Aktif</label>
+@unless($isKasir)
+    @foreach($menus as $menu)
+        <div class="modal fade app-modal" id="editMenuModal{{ $menu->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <form method="post" action="{{ route('app.menu.update', $menu->id) }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Edit Menu: {{ $menu->nama }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nama</label>
+                                    <input class="form-control" name="nama" value="{{ $menu->nama }}" required>
                                 </div>
-                                <input type="hidden" name="status" value="0">
+                                <div class="col-md-6">
+                                    <label class="form-label">Keterangan</label>
+                                    <input class="form-control" name="keterangan" value="{{ $menu->keterangan }}" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Harga</label>
+                                    <input class="form-control" type="number" step="0.01" name="harga" value="{{ $menu->harga }}" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Pajak</label>
+                                    <input class="form-control" type="number" step="0.01" name="pajak" value="{{ $menu->pajak }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Ganti Foto (opsional)</label>
+                                    <input class="form-control" type="file" name="foto" accept="image/*">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Kategori</label>
+                                    <select class="form-select" name="kategori" required>
+                                        @foreach($kategories as $item)
+                                            <option value="{{ $item->id_kategori }}" @selected((int)$menu->kategori === (int)$item->id_kategori)>{{ $item->kategori_menu }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Kios</label>
+                                    <select class="form-select" name="nama_toko" required>
+                                        @foreach($kios as $item)
+                                            <option value="{{ $item->nama }}" @selected($menu->nama_toko === $item->nama)>{{ $item->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label d-block">Status</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="status" value="1" id="menuStatus{{ $menu->id }}" @checked((int)($menu->status ?? 1) === 1)>
+                                        <label class="form-check-label" for="menuStatus{{ $menu->id }}">Aktif</label>
+                                    </div>
+                                    <input type="hidden" name="status" value="0">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button class="btn btn-primary" type="submit"><i class="bi bi-check2-circle me-1"></i>Simpan</button>
-                    </div>
-                </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button class="btn btn-primary" type="submit"><i class="bi bi-check2-circle me-1"></i>Simpan</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-@endforeach
+    @endforeach
+@endunless
 @endsection

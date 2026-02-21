@@ -12,6 +12,17 @@ use Illuminate\View\View;
 
 class KantinMenuController extends Controller
 {
+    private function denyKasirMenuMutation(Request $request): ?RedirectResponse
+    {
+        if ((int) $request->session()->get('level_kantin', 0) === 2) {
+            return back()->withErrors([
+                'menu' => 'Akses ditolak. Kasir hanya bisa melihat data menu.',
+            ]);
+        }
+
+        return null;
+    }
+
     public function index(): View
     {
         // Ambil seluruh master data untuk kebutuhan form dan tabel menu.
@@ -24,6 +35,10 @@ class KantinMenuController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if ($denied = $this->denyKasirMenuMutation($request)) {
+            return $denied;
+        }
+
         // Validasi input + upload gambar menu.
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
@@ -46,6 +61,10 @@ class KantinMenuController extends Controller
 
     public function update(Request $request, int $id): RedirectResponse
     {
+        if ($denied = $this->denyKasirMenuMutation($request)) {
+            return $denied;
+        }
+
         $menu = KantinMenu::query()->findOrFail($id);
         // Foto opsional saat update.
         $data = $request->validate([
@@ -73,6 +92,10 @@ class KantinMenuController extends Controller
 
     public function updateStatus(Request $request, int $id): RedirectResponse
     {
+        if ($denied = $this->denyKasirMenuMutation($request)) {
+            return $denied;
+        }
+
         $menu = KantinMenu::query()->findOrFail($id);
         $data = $request->validate([
             'status' => ['required', 'in:0,1'],
@@ -85,8 +108,12 @@ class KantinMenuController extends Controller
         return back()->with('ok', 'Status menu berhasil diperbarui.');
     }
 
-    public function destroy(int $id): RedirectResponse
+    public function destroy(Request $request, int $id): RedirectResponse
     {
+        if ($denied = $this->denyKasirMenuMutation($request)) {
+            return $denied;
+        }
+
         $menu = KantinMenu::query()->findOrFail($id);
         // Bersihkan file foto ketika data menu dihapus.
         if (!empty($menu->foto) && Storage::disk('public')->exists($menu->foto)) {
