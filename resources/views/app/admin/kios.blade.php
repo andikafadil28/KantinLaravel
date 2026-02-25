@@ -61,14 +61,25 @@
             <thead><tr class="table-head-soft"><th>ID</th><th>Nama</th><th style="min-width:300px;">Aksi</th></tr></thead>
             <tbody>
             @forelse($kios as $k)
+                @php($isActive = (int)($k->status ?? 1) === 1)
                 <tr>
                     <td>{{ $k->id }}</td>
-                    <td>{{ $k->nama }}</td>
+                    <td>
+                        {{ $k->nama }}
+                        <span class="badge {{ $isActive ? 'bg-success' : 'bg-secondary' }} ms-1">{{ $isActive ? 'Aktif' : 'Nonaktif' }}</span>
+                    </td>
                     <td>
                         <div class="table-actions">
                             <button class="btn btn-sm btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#editKiosModal{{ $k->id }}" aria-label="Edit toko {{ $k->nama }}" title="Edit toko">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
+                            <form method="post" action="{{ route('app.kios.status', $k->id) }}">
+                                @csrf
+                                <input type="hidden" name="status" value="{{ $isActive ? 0 : 1 }}">
+                                <button class="btn btn-sm {{ $isActive ? 'btn-outline-danger' : 'btn-outline-success' }}" type="submit" aria-label="{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }} toko {{ $k->nama }}" title="{{ $isActive ? 'Nonaktifkan' : 'Aktifkan' }} toko">
+                                    <i class="bi {{ $isActive ? 'bi-x-circle' : 'bi-check-circle' }}"></i>
+                                </button>
+                            </form>
                             <form method="post" action="{{ route('app.kios.destroy', $k->id) }}" onsubmit="return confirm('Hapus kios ini?')">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-sm btn-danger" type="submit" aria-label="Hapus toko {{ $k->nama }}" title="Hapus toko"><i class="bi bi-trash-fill"></i></button>

@@ -7,6 +7,7 @@ use App\Models\KantinKios;
 use App\Models\KantinMenu;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -25,10 +26,17 @@ class KantinMenuController extends Controller
 
     public function index(): View
     {
+        $activeKiosNames = KantinKios::query()
+            ->where('status', 1)
+            ->pluck('nama');
+
         // Ambil seluruh master data untuk kebutuhan form dan tabel menu.
         return view('app.menu.index', [
-            'menus' => KantinMenu::query()->orderByDesc('id')->get(),
-            'kios' => KantinKios::query()->orderBy('nama')->get(),
+            'menus' => KantinMenu::query()
+                ->whereIn('nama_toko', $activeKiosNames)
+                ->orderByDesc('id')
+                ->get(),
+            'kios' => KantinKios::query()->where('status', 1)->orderBy('nama')->get(),
             'kategories' => KantinKategoriMenu::query()->orderBy('kategori_menu')->get(),
         ]);
     }
@@ -44,7 +52,12 @@ class KantinMenuController extends Controller
             'nama' => ['required', 'string', 'max:100'],
             'keterangan' => ['required', 'string', 'max:500'],
             'kategori' => ['required', 'integer'],
-            'nama_toko' => ['required', 'string', 'max:100'],
+            'nama_toko' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::exists('tb_kios', 'nama')->where(fn ($query) => $query->where('status', 1)),
+            ],
             'harga' => ['required', 'numeric', 'min:0'],
             'pajak' => ['required', 'numeric', 'min:0'],
             'foto' => ['nullable', 'image', 'max:2048'],
@@ -69,13 +82,19 @@ class KantinMenuController extends Controller
         // Foto opsional saat update.
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
-            'keterangan' => ['required', 'string', 'max:500'],
+            'keterangan' => ['nullable', 'string', 'max:500'],
             'kategori' => ['required', 'integer'],
-            'nama_toko' => ['required', 'string', 'max:100'],
+            'nama_toko' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::exists('tb_kios', 'nama')->where(fn ($query) => $query->where('status', 1)),
+            ],
             'harga' => ['required', 'numeric', 'min:0'],
             'pajak' => ['required', 'numeric', 'min:0'],
             'foto' => ['nullable', 'image', 'max:2048'],
         ]);
+        $data['keterangan'] = $data['keterangan'] ?? '';
 
         if ($request->hasFile('foto')) {
             // Hapus foto lama agar storage tidak menumpuk.

@@ -12,5 +12,6 @@ class KantinKios extends Model
 
     protected $fillable = [
         'nama',
+        'status',
     ];
 }

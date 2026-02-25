@@ -84,6 +84,7 @@ Route::middleware('kantin.auth')->group(function (): void {
     Route::get('/app/kios', [KantinAdminController::class, 'kios'])->name('app.kios.index');
     Route::post('/app/kios', [KantinAdminController::class, 'storeKios'])->name('app.kios.store');
     Route::post('/app/kios/{id}', [KantinAdminController::class, 'updateKios'])->name('app.kios.update');
+    Route::post('/app/kios/{id}/status', [KantinAdminController::class, 'updateKiosStatus'])->name('app.kios.status');
     Route::delete('/app/kios/{id}', [KantinAdminController::class, 'deleteKios'])->name('app.kios.destroy');
 });
 

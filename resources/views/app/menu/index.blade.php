@@ -187,7 +187,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Keterangan</label>
-                                    <input class="form-control" name="keterangan" value="{{ $menu->keterangan }}" required>
+                                    <input class="form-control" name="keterangan" value="{{ $menu->keterangan }}">
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Harga</label>

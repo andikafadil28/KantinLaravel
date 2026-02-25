@@ -106,7 +106,10 @@ class KantinAdminController extends Controller
             return back()->withErrors(['kios' => 'Kios sudah terdaftar.']);
         }
 
-        KantinKios::query()->create($data);
+        KantinKios::query()->create([
+            'nama' => $data['nama'],
+            'status' => 1,
+        ]);
 
         return back()->with('ok', 'Kios berhasil ditambahkan.');
     }
@@ -121,6 +124,21 @@ class KantinAdminController extends Controller
         $kios->update($data);
 
         return back()->with('ok', 'Kios berhasil diperbarui.');
+    }
+
+    public function updateKiosStatus(Request $request, int $id): RedirectResponse
+    {
+        $this->ensureAdmin($request);
+        $kios = KantinKios::query()->findOrFail($id);
+        $data = $request->validate([
+            'status' => ['required', 'in:0,1'],
+        ]);
+
+        $kios->update([
+            'status' => (int) $data['status'],
+        ]);
+
+        return back()->with('ok', 'Status kios berhasil diperbarui.');
     }
 
     public function deleteKios(Request $request, int $id): RedirectResponse

@@ -10,6 +10,7 @@ use App\Models\KantinOrder;
 use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
@@ -22,6 +23,11 @@ class KantinOrderController extends Controller
         $level = (int) $request->session()->get('level_kantin', 0);
         $sessionKios = (string) $request->session()->get('nama_toko_kantin', '');
         $filter = (string) $request->query('kios_filter', '');
+        $activeKiosNames = KantinKios::query()
+            ->where('status', 1)
+            ->orderBy('nama')
+            ->pluck('nama');
+        $activeKiosSet = $activeKiosNames->flip();
 
         $query = KantinOrder::query()
             ->with(['kasirUser', 'pembayaran', 'items.menuRel'])
@@ -30,15 +36,15 @@ class KantinOrderController extends Controller
 
         if ($level === 3 && $sessionKios !== '') {
             $query->where('nama_kios', $sessionKios);
-        } elseif ($filter !== '' && $filter !== 'all') {
+        } elseif ($filter !== '' && $filter !== 'all' && $activeKiosSet->has($filter)) {
             $query->where('nama_kios', $filter);
         }
 
         return view('app.order.index', [
             'orders' => $query->get(),
-            'kios' => KantinKios::query()->orderBy('nama')->get(),
+            'kios' => KantinKios::query()->where('status', 1)->orderBy('nama')->get(),
             'nextOrderCode' => date('ymdHi') . random_int(100, 999),
-            'selectedKios' => $filter,
+            'selectedKios' => $activeKiosSet->has($filter) ? $filter : '',
             'level' => $level,
         ]);
     }
@@ -50,7 +56,12 @@ class KantinOrderController extends Controller
             'id_order' => ['required', 'integer'],
             'meja' => ['required', 'string', 'max:255'],
             'pelanggan' => ['required', 'string', 'max:200'],
-            'nama_kios' => ['required', 'string', 'max:200'],
+            'nama_kios' => [
+                'required',
+                'string',
+                'max:200',
+                Rule::exists('tb_kios', 'nama')->where(fn ($query) => $query->where('status', 1)),
+            ],
             'catatan' => ['nullable', 'string', 'max:200'],
         ]);
 
@@ -79,7 +90,12 @@ class KantinOrderController extends Controller
         $data = $request->validate([
             'meja' => ['required', 'string', 'max:255'],
             'pelanggan' => ['required', 'string', 'max:200'],
-            'nama_kios' => ['required', 'string', 'max:200'],
+            'nama_kios' => [
+                'required',
+                'string',
+                'max:200',
+                Rule::exists('tb_kios', 'nama')->where(fn ($query) => $query->where('status', 1)),
+            ],
             'catatan' => ['nullable', 'string', 'max:200'],
         ]);
 
@@ -126,6 +142,9 @@ class KantinOrderController extends Controller
         $order = KantinOrder::query()
             ->with(['items.menuRel', 'pembayaran'])
             ->findOrFail($id);
+        $activeKiosNames = KantinKios::query()
+            ->where('status', 1)
+            ->pluck('nama');
 
         // Hanya admin yang boleh ubah order setelah dibayar.
         $level = (int) $request->session()->get('level_kantin', 0);
@@ -146,6 +165,7 @@ class KantinOrderController extends Controller
             'rows' => $rows,
             'menus' => KantinMenu::query()
                 ->where('nama_toko', $order->nama_kios)
+                ->whereIn('nama_toko', $activeKiosNames)
                 ->where('status', 1)
                 ->orderBy('nama')
                 ->get(),
