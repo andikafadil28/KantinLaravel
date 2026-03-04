@@ -265,27 +265,65 @@
         const filterBtn = document.getElementById('btnFilterNamaToko');
         const resetBtn = document.getElementById('btnResetFilterNamaToko');
         const storageKey = 'kantinapp.menu.filter_nama_toko';
+        const pageLengthStorageKey = 'kantinapp.menu.page_length';
 
-        if (!tableEl || !selectEl || !window.$ || !$.fn || !$.fn.DataTable) {
+        if (!tableEl || !selectEl) {
             return;
         }
 
-        const dt = $(tableEl).DataTable();
         const kiosColumnIndex = 3;
+
+        function getDataTableInstance() {
+            if (window.$ && $.fn && $.fn.dataTable && $.fn.dataTable.isDataTable && $.fn.dataTable.isDataTable(tableEl)) {
+                return $(tableEl).DataTable();
+            }
+            if (window.DataTable && typeof window.DataTable.isDataTable === 'function' && window.DataTable.isDataTable(tableEl)) {
+                return new window.DataTable(tableEl, { retrieve: true });
+            }
+            return null;
+        }
 
         function escapeRegex(value) {
             return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
         function applyFilter() {
+            const dt = getDataTableInstance();
+            if (!dt) {
+                return;
+            }
             const selected = selectEl.value.trim();
             if (!selected) {
                 dt.column(kiosColumnIndex).search('').draw();
                 window.localStorage.removeItem(storageKey);
                 return;
             }
-            dt.column(kiosColumnIndex).search('^' + escapeRegex(selected) + '$', true, false).draw();
+            const keyword = '^' + escapeRegex(selected) + '$';
+            try {
+                dt.column(kiosColumnIndex).search(keyword, true, false).draw();
+            } catch (_error) {
+                dt.column(kiosColumnIndex).search(keyword, { regex: true, smart: false }).draw();
+            }
             window.localStorage.setItem(storageKey, selected);
+        }
+
+        function applySavedPageLength() {
+            const dt = getDataTableInstance();
+            if (!dt) {
+                return;
+            }
+
+            const savedLengthRaw = window.localStorage.getItem(pageLengthStorageKey);
+            const savedLength = Number(savedLengthRaw);
+            if (!Number.isInteger(savedLength) || savedLength <= 0) {
+                return;
+            }
+
+            try {
+                dt.page.len(savedLength).draw(false);
+            } catch (_error) {
+                // Abaikan jika API tidak tersedia pada versi tertentu.
+            }
         }
 
         filterBtn.addEventListener('click', applyFilter);
@@ -294,6 +332,18 @@
             selectEl.value = '';
             applyFilter();
         });
+
+        const lengthSelectEl = tableEl.closest('.dt-container')?.querySelector('.dt-length select');
+        if (lengthSelectEl) {
+            lengthSelectEl.addEventListener('change', function () {
+                const value = Number(this.value);
+                if (Number.isInteger(value) && value > 0) {
+                    window.localStorage.setItem(pageLengthStorageKey, String(value));
+                }
+            });
+        }
+
+        applySavedPageLength();
 
         const savedFilter = window.localStorage.getItem(storageKey) || '';
         if (savedFilter && Array.from(selectEl.options).some(function (opt) { return opt.value === savedFilter; })) {
