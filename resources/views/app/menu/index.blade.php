@@ -264,6 +264,7 @@
         const selectEl = document.getElementById('filterNamaToko');
         const filterBtn = document.getElementById('btnFilterNamaToko');
         const resetBtn = document.getElementById('btnResetFilterNamaToko');
+        const storageKey = 'kantinapp.menu.filter_nama_toko';
 
         if (!tableEl || !selectEl || !window.$ || !$.fn || !$.fn.DataTable) {
             return;
@@ -280,16 +281,25 @@
             const selected = selectEl.value.trim();
             if (!selected) {
                 dt.column(kiosColumnIndex).search('').draw();
+                window.localStorage.removeItem(storageKey);
                 return;
             }
             dt.column(kiosColumnIndex).search('^' + escapeRegex(selected) + '$', true, false).draw();
+            window.localStorage.setItem(storageKey, selected);
         }
 
         filterBtn.addEventListener('click', applyFilter);
+        selectEl.addEventListener('change', applyFilter);
         resetBtn.addEventListener('click', function () {
             selectEl.value = '';
             applyFilter();
         });
+
+        const savedFilter = window.localStorage.getItem(storageKey) || '';
+        if (savedFilter && Array.from(selectEl.options).some(function (opt) { return opt.value === savedFilter; })) {
+            selectEl.value = savedFilter;
+            applyFilter();
+        }
     });
 </script>
 @endpush
