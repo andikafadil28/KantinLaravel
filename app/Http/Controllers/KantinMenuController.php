@@ -50,7 +50,7 @@ class KantinMenuController extends Controller
         // Validasi input + upload gambar menu.
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
-            'keterangan' => ['required', 'string', 'max:500'],
+            'keterangan' => ['nullable', 'string', 'max:500'],
             'kategori' => ['required', 'integer'],
             'nama_toko' => [
                 'required',
@@ -62,6 +62,7 @@ class KantinMenuController extends Controller
             'pajak' => ['required', 'numeric', 'min:0'],
             'foto' => ['nullable', 'image', 'max:2048'],
         ]);
+        $data['keterangan'] = $data['keterangan'] ?? '';
 
         $data['foto'] = $request->hasFile('foto')
             ? $request->file('foto')->store('menu', 'public')

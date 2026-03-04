@@ -82,7 +82,7 @@
                 </div>
                 <div class="col-12">
                     <label class="form-label">Keterangan</label>
-                    <input class="form-control" type="text" name="keterangan" required>
+                    <input class="form-control" type="text" name="keterangan">
                 </div>
                 <div class="col-12">
                     <button class="btn btn-primary" type="submit"><i class="bi bi-plus-circle me-1"></i>Simpan</button>
@@ -96,6 +96,24 @@
 <div class="card menu-page-section shadow-lg border-0">
     <div class="card-header fw-bold"><i class="bi bi-list-ul me-2"></i>Daftar Menu</div>
     <div class="card-body table-responsive">
+        @php($kiosFilterOptions = $menus->pluck('nama_toko')->filter()->unique()->sort()->values())
+        <div class="d-flex flex-wrap align-items-end gap-2 mb-3">
+            <div>
+                <label for="filterNamaToko" class="form-label mb-1">Filter Nama Toko</label>
+                <select id="filterNamaToko" class="form-select form-select-sm" style="min-width: 220px;">
+                    <option value="">Semua Toko</option>
+                    @foreach($kiosFilterOptions as $namaToko)
+                        <option value="{{ $namaToko }}">{{ $namaToko }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="button" id="btnFilterNamaToko" class="btn btn-sm btn-primary">
+                <i class="bi bi-funnel me-1"></i>Filter
+            </button>
+            <button type="button" id="btnResetFilterNamaToko" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+            </button>
+        </div>
         <table class="table table-striped table-hover table-bordered caption-top align-middle js-datatable">
             <caption class="fw-bold">Daftar Menu</caption>
             <thead>
@@ -238,3 +256,40 @@
     @endforeach
 @endunless
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tableEl = document.querySelector('.js-datatable');
+        const selectEl = document.getElementById('filterNamaToko');
+        const filterBtn = document.getElementById('btnFilterNamaToko');
+        const resetBtn = document.getElementById('btnResetFilterNamaToko');
+
+        if (!tableEl || !selectEl || !window.$ || !$.fn || !$.fn.DataTable) {
+            return;
+        }
+
+        const dt = $(tableEl).DataTable();
+        const kiosColumnIndex = 3;
+
+        function escapeRegex(value) {
+            return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function applyFilter() {
+            const selected = selectEl.value.trim();
+            if (!selected) {
+                dt.column(kiosColumnIndex).search('').draw();
+                return;
+            }
+            dt.column(kiosColumnIndex).search('^' + escapeRegex(selected) + '$', true, false).draw();
+        }
+
+        filterBtn.addEventListener('click', applyFilter);
+        resetBtn.addEventListener('click', function () {
+            selectEl.value = '';
+            applyFilter();
+        });
+    });
+</script>
+@endpush
