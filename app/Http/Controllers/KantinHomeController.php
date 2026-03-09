@@ -19,6 +19,7 @@ class KantinHomeController extends Controller
         $sessionKios = (string) $request->session()->get('nama_toko_kantin', '');
         $today = now()->toDateString();
         $yesterday = now()->subDay()->toDateString();
+        $lastSevenDaysStart = now()->subDays(6)->toDateString();
 
         // Order aktif kasir login pada hari ini.
         $openOrders = KantinOrder::query()
@@ -77,13 +78,14 @@ class KantinHomeController extends Controller
             ->limit(5)
             ->get();
 
-        // Dataset chart menu terlaris minggu berjalan.
-        $weeklyRows = DB::table('tb_order')
+        // Dataset chart menu terlaris 7 hari terakhir.
+        $lastSevenDaysRows = DB::table('tb_order')
             ->leftJoin('tb_list_order', 'tb_list_order.kode_order', '=', 'tb_order.id_order')
             ->leftJoin('tb_menu', 'tb_menu.id', '=', 'tb_list_order.menu')
             ->selectRaw('tb_menu.nama as nama_menu, SUM(tb_list_order.jumlah) as total_terjual')
             ->whereNotNull('tb_menu.nama')
-            ->whereRaw('YEARWEEK(tb_order.waktu_order, 1) = YEARWEEK(CURDATE(), 1)')
+            ->whereDate('tb_order.waktu_order', '>=', $lastSevenDaysStart)
+            ->whereDate('tb_order.waktu_order', '<=', $today)
             ->groupBy('tb_menu.nama', 'tb_menu.nama_toko')
             ->orderByDesc('total_terjual')
             ->limit(5)
@@ -102,8 +104,8 @@ class KantinHomeController extends Controller
             'topKiosToday' => $topKiosToday,
             'dailyMenuLabels' => $dailyRows->pluck('nama_menu')->values(),
             'dailyMenuTotals' => $dailyRows->pluck('total_terjual')->map(fn ($v) => (int) $v)->values(),
-            'weeklyMenuLabels' => $weeklyRows->pluck('nama_menu')->values(),
-            'weeklyMenuTotals' => $weeklyRows->pluck('total_terjual')->map(fn ($v) => (int) $v)->values(),
+            'lastSevenDaysMenuLabels' => $lastSevenDaysRows->pluck('nama_menu')->values(),
+            'lastSevenDaysMenuTotals' => $lastSevenDaysRows->pluck('total_terjual')->map(fn ($v) => (int) $v)->values(),
         ]);
     }
 }

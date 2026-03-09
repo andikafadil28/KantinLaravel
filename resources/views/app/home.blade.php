@@ -412,8 +412,8 @@
     <div class="col-xl-6">
         <div class="card home-chart-card h-100">
             <div class="card-header text-white fw-bold d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-graph-up-arrow me-2"></i>Menu Terlaris Minggu Ini</span>
-                <span class="badge text-bg-info">Update: Minggu ini</span>
+                <span><i class="bi bi-graph-up-arrow me-2"></i>Menu Terlaris 7 Hari Terakhir</span>
+                <span class="badge text-bg-info">Update: 7 hari terakhir</span>
             </div>
             <div class="card-body">
                 <div class="chart-wrap">
@@ -464,8 +464,8 @@
         // Data chart dikirim dari controller (hasil agregasi database).
         const labels = @json($dailyMenuLabels);
         const values = @json($dailyMenuTotals);
-        const weeklyLabels = @json($weeklyMenuLabels);
-        const weeklyValues = @json($weeklyMenuTotals);
+        const lastSevenDaysLabels = @json($lastSevenDaysMenuLabels);
+        const lastSevenDaysValues = @json($lastSevenDaysMenuTotals);
         const colors = ['#ff7a18', '#ffc107', '#4caf50', '#17a2b8', '#dc3545'];
         // Hapus skeleton saat chart atau empty-state selesai dirender.
         const hideSkeleton = function (canvasId) {
@@ -538,7 +538,7 @@
         }
 
         renderMenuChart('menuTerlarisChart', labels, values, 'Belum ada penjualan hari ini');
-        renderMenuChart('menuTerlarisMingguanChart', weeklyLabels, weeklyValues, 'Belum ada penjualan minggu ini');
+        renderMenuChart('menuTerlarisMingguanChart', lastSevenDaysLabels, lastSevenDaysValues, 'Belum ada penjualan dalam 7 hari terakhir');
     });
 </script>
 @endpush
