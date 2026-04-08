@@ -30,6 +30,9 @@ class KantinReportController extends Controller
         'Air Putih',
         'Nutrisari',
         'Es Good Day',
+        'Dancow',
+        'Chocolatos',
+        'Kopi hitam',
     ];
 
     public function orders(Request $request): View
@@ -247,10 +250,26 @@ class KantinReportController extends Controller
         $rows = $this->baseOrderQuery($start, $end, $kios)->get();
         $filename = $this->buildExportFilename('laporan_detail', $start, $end, $kios);
         $header = [
-            'kode_order', 'pelanggan', 'meja', 'nominal_toko', 'nominal_rs', 'jumlah_bayar', 'diskon', 'waktu_order', 'nama_kios',
+            'kode_order',
+            'pelanggan',
+            'meja',
+            'nominal_toko',
+            'nominal_rs',
+            'jumlah_bayar',
+            'diskon',
+            'waktu_order',
+            'nama_kios',
         ];
-        $mappedRows = $rows->map(fn ($r) => [
-            $r->id_order, $r->pelanggan, $r->meja, $r->nominal_toko, $r->nominal_rs, $r->jumlah_bayar, $r->diskon, $r->waktu_order, $r->nama_kios,
+        $mappedRows = $rows->map(fn($r) => [
+            $r->id_order,
+            $r->pelanggan,
+            $r->meja,
+            $r->nominal_toko,
+            $r->nominal_rs,
+            $r->jumlah_bayar,
+            $r->diskon,
+            $r->waktu_order,
+            $r->nama_kios,
         ]);
         $title = 'Tarikan Data Pendapatan Detail';
 
@@ -267,10 +286,20 @@ class KantinReportController extends Controller
         $rows = $this->baseOrderQuery($start, $end, $kios)->get();
         $filename = $this->buildExportFilename('laporan_rs', $start, $end, $kios);
         $header = [
-            'kode_order', 'pelanggan', 'meja', 'nominal_rs', 'waktu_order', 'nama_kios',
+            'kode_order',
+            'pelanggan',
+            'meja',
+            'nominal_rs',
+            'waktu_order',
+            'nama_kios',
         ];
-        $mappedRows = $rows->map(fn ($r) => [
-            $r->id_order, $r->pelanggan, $r->meja, $r->nominal_rs, $r->waktu_order, $r->nama_kios,
+        $mappedRows = $rows->map(fn($r) => [
+            $r->id_order,
+            $r->pelanggan,
+            $r->meja,
+            $r->nominal_rs,
+            $r->waktu_order,
+            $r->nama_kios,
         ]);
         $title = 'Tarikan Data Pendapatan RS';
 
@@ -287,10 +316,22 @@ class KantinReportController extends Controller
         $rows = $this->baseOrderQuery($start, $end, $kios)->get();
         $filename = $this->buildExportFilename('laporan_toko', $start, $end, $kios);
         $header = [
-            'kode_order', 'pelanggan', 'meja', 'nominal_toko', 'diskon', 'waktu_order', 'nama_kios',
+            'kode_order',
+            'pelanggan',
+            'meja',
+            'nominal_toko',
+            'diskon',
+            'waktu_order',
+            'nama_kios',
         ];
-        $mappedRows = $rows->map(fn ($r) => [
-            $r->id_order, $r->pelanggan, $r->meja, $r->nominal_toko, $r->diskon, $r->waktu_order, $r->nama_kios,
+        $mappedRows = $rows->map(fn($r) => [
+            $r->id_order,
+            $r->pelanggan,
+            $r->meja,
+            $r->nominal_toko,
+            $r->diskon,
+            $r->waktu_order,
+            $r->nama_kios,
         ]);
         $title = 'Tarikan Data Pendapatan Toko';
 
@@ -321,10 +362,18 @@ class KantinReportController extends Controller
         $rows = $query->get();
         $filename = $this->buildExportFilename('laporan_menu', $start, $end, $kios);
         $header = [
-            'nama_menu', 'nama_toko', 'total_terjual', 'harga_satuan', 'total_harga',
+            'nama_menu',
+            'nama_toko',
+            'total_terjual',
+            'harga_satuan',
+            'total_harga',
         ];
-        $mappedRows = $rows->map(fn ($r) => [
-            $r->nama_menu, $r->nama_toko, $r->total_terjual, $r->harga_satuan, $r->total_harga,
+        $mappedRows = $rows->map(fn($r) => [
+            $r->nama_menu,
+            $r->nama_toko,
+            $r->total_terjual,
+            $r->harga_satuan,
+            $r->total_harga,
         ]);
         $title = 'Tarikan Data Rekap Penjualan Menu';
 
@@ -349,10 +398,18 @@ class KantinReportController extends Controller
         $rows = $query->get();
         $filename = $this->buildExportFilename('laporan_rekap_rs', $start, $end, $kios);
         $header = [
-            'nama_menu', 'nama_toko', 'total_terjual', 'harga_satuan', 'total_harga',
+            'nama_menu',
+            'nama_toko',
+            'total_terjual',
+            'harga_satuan',
+            'total_harga',
         ];
-        $mappedRows = $rows->map(fn ($r) => [
-            $r->nama, $r->nama_toko, $r->total_terjual, $r->harga_satuan, $r->total_harga,
+        $mappedRows = $rows->map(fn($r) => [
+            $r->nama,
+            $r->nama_toko,
+            $r->total_terjual,
+            $r->harga_satuan,
+            $r->total_harga,
         ]);
         $title = 'Tarikan Data Rekap Kontribusi RS';
 
@@ -377,10 +434,16 @@ class KantinReportController extends Controller
         $rows = $query->get();
         $filename = $this->buildExportFilename('laporan_rekap_menu_rs', $start, $end, 'all');
         $header = [
-            'nama_menu', 'total_terjual', 'harga_satuan', 'total_harga',
+            'nama_menu',
+            'total_terjual',
+            'harga_satuan',
+            'total_harga',
         ];
-        $mappedRows = $rows->map(fn ($r) => [
-            $r->nama, $r->total_terjual, $r->harga_satuan, $r->total_harga,
+        $mappedRows = $rows->map(fn($r) => [
+            $r->nama,
+            $r->total_terjual,
+            $r->harga_satuan,
+            $r->total_harga,
         ]);
         $title = 'Tarikan Data Rekap Menu Target RS';
 
@@ -417,10 +480,34 @@ class KantinReportController extends Controller
         $rows = $query->get();
         $filename = $this->buildExportFilename('laporan_finance_detail', $start, $end, $kios);
         $header = [
-            'waktu_order', 'nama_menu', 'jumlah', 'nama_toko', 'harga_jual', 'ppn', 'harga_pembeli', 'total_menu', 'total_ppn', 'total_pembeli', 'untung_toko', 'untung_rs', 'untung_rs_pajak',
+            'waktu_order',
+            'nama_menu',
+            'jumlah',
+            'nama_toko',
+            'harga_jual',
+            'ppn',
+            'harga_pembeli',
+            'total_menu',
+            'total_ppn',
+            'total_pembeli',
+            'untung_toko',
+            'untung_rs',
+            'untung_rs_pajak',
         ];
-        $mappedRows = $rows->map(fn ($r) => [
-            $r->waktu_order, $r->nama_menu, $r->jumlah_terjual, $r->nama_toko, $r->harga_jual_per_menu, $r->harga_ppn, $r->harga_pembeli_per_menu, $r->harga_total_per_menu, $r->harga_total_ppn, $r->harga_pembeli_total, $r->keuntungan_toko, $r->keuntungan_rs, $r->keuntungan_rs_pajak,
+        $mappedRows = $rows->map(fn($r) => [
+            $r->waktu_order,
+            $r->nama_menu,
+            $r->jumlah_terjual,
+            $r->nama_toko,
+            $r->harga_jual_per_menu,
+            $r->harga_ppn,
+            $r->harga_pembeli_per_menu,
+            $r->harga_total_per_menu,
+            $r->harga_total_ppn,
+            $r->harga_pembeli_total,
+            $r->keuntungan_toko,
+            $r->keuntungan_rs,
+            $r->keuntungan_rs_pajak,
         ]);
         $title = 'Tarikan Data Rekap Keuangan Detail';
 
@@ -458,10 +545,32 @@ class KantinReportController extends Controller
         $rows = $query->get();
         $filename = $this->buildExportFilename('laporan_finance_menu', $start, $end, $kios);
         $header = [
-            'nama_menu', 'jumlah', 'nama_toko', 'harga_jual', 'ppn', 'harga_pembeli', 'total_menu', 'total_ppn', 'total_pembeli', 'untung_toko', 'untung_rs', 'untung_rs_pajak',
+            'nama_menu',
+            'jumlah',
+            'nama_toko',
+            'harga_jual',
+            'ppn',
+            'harga_pembeli',
+            'total_menu',
+            'total_ppn',
+            'total_pembeli',
+            'untung_toko',
+            'untung_rs',
+            'untung_rs_pajak',
         ];
-        $mappedRows = $rows->map(fn ($r) => [
-            $r->nama_menu, $r->jumlah_terjual, $r->nama_toko, $r->harga_jual_per_menu, $r->harga_ppn, $r->harga_pembeli_per_menu, $r->harga_total_per_menu, $r->harga_total_ppn, $r->harga_pembeli_total, $r->keuntungan_toko, $r->keuntungan_rs, $r->keuntungan_rs_pajak,
+        $mappedRows = $rows->map(fn($r) => [
+            $r->nama_menu,
+            $r->jumlah_terjual,
+            $r->nama_toko,
+            $r->harga_jual_per_menu,
+            $r->harga_ppn,
+            $r->harga_pembeli_per_menu,
+            $r->harga_total_per_menu,
+            $r->harga_total_ppn,
+            $r->harga_pembeli_total,
+            $r->keuntungan_toko,
+            $r->keuntungan_rs,
+            $r->keuntungan_rs_pajak,
         ]);
         $title = 'Tarikan Data Rekap Keuangan per Menu';
 
@@ -719,10 +828,10 @@ class KantinReportController extends Controller
 
         $totals = array_fill(0, count($header), null);
         foreach ($moneyColumnIndexes as $idx) {
-            $totals[$idx] = (float) collect($normalizedRows)->sum(fn ($r) => (float) ($r[$idx] ?? 0));
+            $totals[$idx] = (float) collect($normalizedRows)->sum(fn($r) => (float) ($r[$idx] ?? 0));
         }
         foreach ($countColumnIndexes as $idx) {
-            $totals[$idx] = (int) collect($normalizedRows)->sum(fn ($r) => (int) ($r[$idx] ?? 0));
+            $totals[$idx] = (int) collect($normalizedRows)->sum(fn($r) => (int) ($r[$idx] ?? 0));
         }
 
         $pdf = Pdf::loadView('app.report.export_pdf', [
